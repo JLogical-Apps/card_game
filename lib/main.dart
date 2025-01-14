@@ -25,6 +25,7 @@ class HomePage extends HookWidget {
     final cardsState = useState([
       [1, 2],
       [3, 4],
+      <int>[],
     ]);
 
     return CardGame<int>(
@@ -45,11 +46,26 @@ class HomePage extends HookWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Colors.black,
-            width: 1,
+            width: 1.5,
           ),
         ),
-        child: Center(
-          child: Text(value.toString()),
+        child: Stack(
+          children: [
+            Positioned(
+              left: 3,
+              top: 1,
+              child: Text(value.toString()),
+            ),
+            Center(
+              child: Text(
+                value.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       child: Scaffold(
@@ -57,7 +73,7 @@ class HomePage extends HookWidget {
         body: SafeArea(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: cardsState.value
                 .mapIndexed((i, cards) => CardColumn(
                       cards: cards,

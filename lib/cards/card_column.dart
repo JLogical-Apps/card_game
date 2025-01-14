@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cards/cards/card.dart';
 import 'package:cards/cards/card_game.dart';
 import 'package:cards/cards/card_move_details.dart';
@@ -10,14 +12,21 @@ class CardColumn<T extends Object, G> extends StatelessWidget {
   final G? groupValue;
   final Function(CardMoveDetails<T, G>)? onCardAdded;
 
-  const CardColumn({super.key, required this.cards, this.groupValue, this.onCardAdded});
+  final double spacing;
+
+  const CardColumn({
+    super.key,
+    required this.cards,
+    this.groupValue,
+    this.onCardAdded,
+    this.spacing = 20,
+  });
 
   @override
   Widget build(BuildContext context) {
     return onCardAdded == null
         ? _buildCards(context)
         : DragTarget<CardMoveDetails<T, G>>(
-            hitTestBehavior: HitTestBehavior.deferToChild,
             onWillAcceptWithDetails: (details) => details.data.fromGroupValue != groupValue,
             onAcceptWithDetails: (details) => onCardAdded!.call(details.data),
             builder: (context, accepted, rejected) => _buildCards(context, isDraggedOver: accepted.isNotEmpty),
@@ -29,6 +38,7 @@ class CardColumn<T extends Object, G> extends StatelessWidget {
 
     return SizedBox(
       width: cardGame.cardSize.width,
+      height: cardGame.cardSize.height + (max(1, cards.length) - 1) * spacing,
       child: Stack(
         children: [
           Positioned(
@@ -41,10 +51,10 @@ class CardColumn<T extends Object, G> extends StatelessWidget {
           ...cards.mapIndexed((i, card) => Positioned(
                 left: 0,
                 right: 0,
-                top: i * 10,
+                top: i * spacing,
                 child: Card<T, G>(
                   value: card,
-                  groupValue: groupValue,
+                  groupValue: i + 1 == cards.length ? groupValue : null,
                   state: isDraggedOver && i + 1 == cards.length ? CardState.highlighted : CardState.regular,
                 ),
               )),
