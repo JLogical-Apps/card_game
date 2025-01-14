@@ -1,0 +1,4 @@
+enum CardState {
+  regular,
+  highlighted,
+}
