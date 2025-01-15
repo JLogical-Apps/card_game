@@ -8,7 +8,15 @@ class Card<T extends Object, G> extends StatelessWidget {
   final G? groupValue;
   final CardState state;
 
-  const Card({super.key, required this.value, this.groupValue, this.state = CardState.regular});
+  final List<T>? draggableCardValues;
+
+  const Card({
+    super.key,
+    required this.value,
+    this.groupValue,
+    this.draggableCardValues,
+    this.state = CardState.regular,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +30,7 @@ class Card<T extends Object, G> extends StatelessWidget {
     return groupValue == null
         ? widget
         : Draggable<CardMoveDetails<T, G>>(
-            data: CardMoveDetails(cardValue: value, fromGroupValue: groupValue as G),
+            data: CardMoveDetails(cardValues: draggableCardValues ?? [value], fromGroupValue: groupValue as G),
             feedback: Material(color: Colors.transparent, child: widget),
             childWhenDragging: SizedBox.shrink(),
             child: widget,

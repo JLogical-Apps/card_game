@@ -1,6 +1,6 @@
 class CardMoveDetails<T, G> {
-  final T cardValue;
+  final List<T> cardValues;
   final G fromGroupValue;
 
-  const CardMoveDetails({required this.cardValue, required this.fromGroupValue});
+  const CardMoveDetails({required this.cardValues, required this.fromGroupValue});
 }

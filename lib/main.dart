@@ -80,8 +80,9 @@ class HomePage extends HookWidget {
                       groupValue: i,
                       onCardAdded: (cardMoveDetails) {
                         final newCards = [...cardsState.value];
-                        newCards[cardMoveDetails.fromGroupValue].removeLast();
-                        newCards[i].add(cardMoveDetails.cardValue);
+                        newCards[cardMoveDetails.fromGroupValue]
+                            .removeWhere((card) => cardMoveDetails.cardValues.contains(card));
+                        newCards[i].addAll(cardMoveDetails.cardValues);
                         cardsState.value = newCards;
                       },
                     ))

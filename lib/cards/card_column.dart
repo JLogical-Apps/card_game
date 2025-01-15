@@ -19,7 +19,7 @@ class CardColumn<T extends Object, G> extends StatelessWidget {
     required this.cards,
     this.groupValue,
     this.onCardAdded,
-    this.spacing = 20,
+    this.spacing = 25,
   });
 
   @override
@@ -54,8 +54,9 @@ class CardColumn<T extends Object, G> extends StatelessWidget {
                 top: i * spacing,
                 child: Card<T, G>(
                   value: card,
-                  groupValue: i + 1 == cards.length ? groupValue : null,
+                  groupValue: groupValue,
                   state: isDraggedOver && i + 1 == cards.length ? CardState.highlighted : CardState.regular,
+                  draggableCardValues: cards.sublist(i),
                 ),
               )),
         ],
