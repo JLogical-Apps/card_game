@@ -45,19 +45,21 @@ class CardGame<T extends Object, G> extends HookWidget {
                 top: group.position.dy,
                 width: cardSize.width,
                 height: cardSize.height,
-                child: DragTarget<CardMoveDetails<T, G>>(
-                  onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
-                  onAcceptWithDetails: (details) => onCardMoved(details.data, group.value),
-                  builder: (context, accepted, rejected) {
-                    return buildEmptyGroup(
-                      accepted.isNotEmpty
-                          ? CardState.highlighted
-                          : rejected.isNotEmpty
-                              ? CardState.error
-                              : CardState.regular,
-                    );
-                  },
-                ),
+                child: draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
+                    ? buildEmptyGroup(CardState.regular)
+                    : DragTarget<CardMoveDetails<T, G>>(
+                        onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
+                        onAcceptWithDetails: (details) => onCardMoved(details.data, group.value),
+                        builder: (context, accepted, rejected) {
+                          return buildEmptyGroup(
+                            accepted.isNotEmpty
+                                ? CardState.highlighted
+                                : rejected.isNotEmpty
+                                    ? CardState.error
+                                    : CardState.regular,
+                          );
+                        },
+                      ),
               )),
           ...cardGroups
               .expand((group) => group.values.mapIndexed((i, value) => (group, i, value)))
