@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.21.1-pre.4
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
