@@ -33,6 +33,7 @@ class Card<T extends Object, G> extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final groupValue = this.groupValue;
+    final draggableCardValues = this.draggableCardValues;
 
     final dragStartOffset = useState<Offset?>(null);
     final cardGame = context.watch<CardGame<T, G>>();
@@ -64,9 +65,9 @@ class Card<T extends Object, G> extends HookWidget {
                 },
               );
 
-    if (groupValue != null) {
+    if (groupValue != null && draggableCardValues != null) {
       final cardMoveDetails = CardMoveDetails<T, G>(
-        cardValues: draggableCardValues ?? [value],
+        cardValues: draggableCardValues,
         fromGroupValue: groupValue as G,
       );
       widget = Draggable<CardMoveDetails<T, G>>(
