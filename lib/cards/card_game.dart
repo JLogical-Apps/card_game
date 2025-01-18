@@ -86,6 +86,7 @@ class CardGame<T extends Object, G> extends HookWidget {
                       child: Card<T, G>(
                         value: value,
                         groupValue: group.value,
+                        canBeDraggedOnto: group.canBeDraggedOnto(i, value),
                         currentlyDraggedCard: draggingValue?.moveDetails,
                         canMoveCard: canMoveCard,
                         onCardMoved: onCardMoved,

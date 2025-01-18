@@ -10,6 +10,8 @@ abstract class CardGroup<T extends Object, G> {
   List<T>? getDraggableCardValues(int index, T value) {
     return [value];
   }
+
+  bool canBeDraggedOnto(int index, T value) => false;
 }
 
 class CardColumn<T extends Object, G> extends CardGroup<T, G> {
@@ -53,5 +55,10 @@ class CardColumn<T extends Object, G> extends CardGroup<T, G> {
     } else {
       return null;
     }
+  }
+
+  @override
+  bool canBeDraggedOnto(int index, T value) {
+    return index + 1 == values.length;
   }
 }
