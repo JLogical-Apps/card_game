@@ -5,7 +5,11 @@ abstract class CardGroup<T extends Object, G> {
   List<T> get values;
   Offset get position;
 
+  int getPriority(int index, T value);
   Offset getOffset(int index, T value);
+  List<T> getDraggableCardValues(int index, T value) {
+    return [value];
+  }
 }
 
 class CardColumn<T extends Object, G> extends CardGroup<T, G> {
@@ -23,7 +27,17 @@ class CardColumn<T extends Object, G> extends CardGroup<T, G> {
   CardColumn({required this.value, required this.values, required this.position, this.spacing = 20});
 
   @override
+  int getPriority(int index, T value) {
+    return index;
+  }
+
+  @override
   Offset getOffset(int index, T value) {
     return position + Offset(0, index * spacing);
+  }
+
+  @override
+  List<T> getDraggableCardValues(int index, T value) {
+    return values.sublist(index);
   }
 }

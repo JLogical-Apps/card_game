@@ -53,8 +53,8 @@ class Card<T extends Object, G> extends HookWidget {
     if (groupValue != null) {
       widget = Draggable<CardMoveDetails<T, G>>(
         data: CardMoveDetails(cardValues: draggableCardValues ?? [value], fromGroupValue: groupValue as G),
-        feedback: Material(color: Colors.transparent, child: widget),
-        childWhenDragging: SizedBox.shrink(),
+        feedback: SizedBox.shrink(),
+        childWhenDragging: IgnorePointer(child: widget),
         onDragUpdate: (details) {
           dragStartOffset.value ??= details.localPosition;
           onDragUpdated(details.localPosition - dragStartOffset.value!);
