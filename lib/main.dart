@@ -23,8 +23,8 @@ class HomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final cardsState = useState([
-      [1, 2],
-      [3, 4],
+      [4, 3, 2, 1],
+      <int>[],
       <int>[],
     ]);
 
@@ -33,8 +33,14 @@ class HomePage extends HookWidget {
       body: SafeArea(
         child: CardGame<int, int>(
           cardGroups: cardsState.value
-              .mapIndexed((i, states) => CardColumn<int, int>(value: i, values: states, position: Offset(40 + i * 140, 0)))
+              .mapIndexed(
+                  (i, states) => CardColumn<int, int>(value: i, values: states, position: Offset(40 + i * 140, 0)))
               .toList(),
+          canMoveCard: (move, newGroupValue) {
+            final movingCard = move.cardValues.last;
+            final movingOnto = cardsState.value[newGroupValue].lastOrNull;
+            return movingOnto == null || movingCard < movingOnto;
+          },
           onCardMoved: (move, newGroupValue) {
             final newCards = [...cardsState.value];
             newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
@@ -46,7 +52,12 @@ class HomePage extends HookWidget {
             duration: Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             decoration: BoxDecoration(
-              color: (state == CardState.regular ? Colors.white : Color(0xFF9FC7FF)).withValues(alpha: 0.2),
+              color: switch (state) {
+                CardState.regular => Colors.white,
+                CardState.highlighted => Color(0xFF9FC7FF),
+                CardState.error => Color(0xFFFFADAD),
+              }
+                  .withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
           ),
@@ -54,7 +65,11 @@ class HomePage extends HookWidget {
             duration: Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             decoration: BoxDecoration(
-              color: state == CardState.regular ? Colors.white : Color(0xFF9FC7FF),
+              color: switch (state) {
+                CardState.regular => Colors.white,
+                CardState.highlighted => Color(0xFF9FC7FF),
+                CardState.error => Color(0xFFFFADAD),
+              },
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.black,

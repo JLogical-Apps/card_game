@@ -13,6 +13,7 @@ class CardGame<T extends Object, G> extends HookWidget {
   final List<CardGroup<T, G>> cardGroups;
   final Widget Function(CardState) emptyGroupBuilder;
 
+  final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
   final Function(CardMoveDetails<T, G>, G newGroupValue) onCardMoved;
 
   const CardGame({
@@ -21,6 +22,7 @@ class CardGame<T extends Object, G> extends HookWidget {
     required this.cardBuilder,
     required this.cardGroups,
     required this.emptyGroupBuilder,
+    this.canMoveCard,
     required this.onCardMoved,
   });
 
@@ -30,7 +32,7 @@ class CardGame<T extends Object, G> extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final draggingState = useState<({CardGroup<T, G> group, int index, T value, Offset offset})?>(null);
+    final draggingState = useState<({CardMoveDetails<T, G> moveDetails, Offset offset})?>(null);
     final draggingValue = draggingState.value;
 
     return Provider<CardGame<T, G>>.value(
@@ -47,7 +49,13 @@ class CardGame<T extends Object, G> extends HookWidget {
                   onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
                   onAcceptWithDetails: (details) => onCardMoved(details.data, group.value),
                   builder: (context, accepted, rejected) {
-                    return buildEmptyGroup(accepted.isEmpty ? CardState.regular : CardState.highlighted);
+                    return buildEmptyGroup(
+                      accepted.isNotEmpty
+                          ? CardState.highlighted
+                          : rejected.isNotEmpty
+                              ? CardState.error
+                              : CardState.regular,
+                    );
                   },
                 ),
               )),
@@ -55,22 +63,14 @@ class CardGame<T extends Object, G> extends HookWidget {
               .expand((group) => group.values.mapIndexed((i, value) => (group, i, value)))
               .groupListsBy((record) {
                 final (group, i, value) = record;
-                final isBeingDragged = draggingValue == null
-                    ? false
-                    : draggingValue.group
-                        .getDraggableCardValues(draggingValue.index, draggingValue.value)
-                        .contains(value);
+                final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
                 return isBeingDragged ? double.maxFinite : group.getPriority(i, value);
               })
               .entries
               .sortedBy((entry) => entry.key)
               .expand((groupedEntry) => groupedEntry.value.map((record) {
                     final (group, i, value) = record;
-                    final isBeingDragged = draggingValue == null
-                        ? false
-                        : draggingValue.group
-                            .getDraggableCardValues(draggingValue.index, draggingValue.value)
-                            .contains(value);
+                    final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
                     return AnimatedPositioned(
                       key: ValueKey(value),
                       top: isBeingDragged
@@ -86,12 +86,12 @@ class CardGame<T extends Object, G> extends HookWidget {
                       child: Card<T, G>(
                         value: value,
                         groupValue: group.value,
+                        currentlyDraggedCard: draggingValue?.moveDetails,
+                        canMoveCard: canMoveCard,
                         onCardMoved: onCardMoved,
                         draggableCardValues: group.getDraggableCardValues(i, value),
-                        onDragUpdated: (offset) => draggingState.value = (
-                          group: group,
-                          index: i,
-                          value: value,
+                        onDragUpdated: (moveDetails, offset) => draggingState.value = (
+                          moveDetails: moveDetails,
                           offset: offset,
                         ),
                         onDragEnded: () => draggingState.value = null,
