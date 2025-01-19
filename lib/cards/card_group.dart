@@ -124,6 +124,8 @@ class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
+    super.canMoveCardHere,
+    super.onCardMovedHere,
     super.isCardFlipped,
     super.canCardBeGrabbed,
     super.maxGrabStackSize,
