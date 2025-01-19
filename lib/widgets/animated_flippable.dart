@@ -22,7 +22,7 @@ class AnimatedFlippable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: isFlipped ? 180 : 0),
+      tween: Tween(begin: isFlipped ? 180 : 0, end: isFlipped ? 180 : 0),
       duration: duration,
       curve: curve,
       builder: (context, value, child) {

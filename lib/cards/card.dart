@@ -9,11 +9,13 @@ class Card<T extends Object, G> extends HookWidget {
   final T value;
   final G? groupValue;
 
+  final bool flipped;
+
   final CardMoveDetails<T, G>? currentlyDraggedCard;
 
   final bool canBeDraggedOnto;
   final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
-  final Function(CardMoveDetails<T, G>, G newGroupValue) onCardMoved;
+  final Function(CardMoveDetails<T, G>, G newGroupValue)? onCardMoved;
   final Function(CardMoveDetails<T, G>, Offset) onDragUpdated;
   final Function() onDragEnded;
   final List<T>? draggableCardValues;
@@ -22,11 +24,12 @@ class Card<T extends Object, G> extends HookWidget {
     super.key,
     required this.value,
     this.groupValue,
+    required this.flipped,
     this.canBeDraggedOnto = false,
     this.currentlyDraggedCard,
     this.draggableCardValues,
     this.canMoveCard,
-    required this.onCardMoved,
+    this.onCardMoved,
     required this.onDragUpdated,
     required this.onDragEnded,
   });
@@ -35,35 +38,30 @@ class Card<T extends Object, G> extends HookWidget {
   Widget build(BuildContext context) {
     final groupValue = this.groupValue;
     final draggableCardValues = this.draggableCardValues;
+    final onCardMoved = this.onCardMoved;
 
     final dragStartOffset = useState<Offset?>(null);
     final cardGame = context.watch<CardGame<T, G>>();
 
-    Widget widget = dragStartOffset.value != null ||
+    Widget widget = onCardMoved == null ||
+            dragStartOffset.value != null ||
             groupValue == null ||
             currentlyDraggedCard?.fromGroupValue == groupValue ||
             !canBeDraggedOnto
-        ? SizedBox(
-            width: cardGame.cardSize.width,
-            height: cardGame.cardSize.height,
-            child: cardGame.buildCardContent(value, CardState.regular),
-          )
+        ? cardGame.buildCardContent(value, flipped, CardState.regular)
         : DragTarget<CardMoveDetails<T, G>>(
             onWillAcceptWithDetails: (details) =>
                 details.data.fromGroupValue != groupValue && (canMoveCard?.call(details.data, groupValue) ?? true),
             onAcceptWithDetails: (details) => onCardMoved(details.data, groupValue),
             builder: (context, accepted, rejected) {
-              return SizedBox(
-                width: cardGame.cardSize.width,
-                height: cardGame.cardSize.height,
-                child: cardGame.buildCardContent(
-                  value,
-                  accepted.isNotEmpty
-                      ? CardState.highlighted
-                      : rejected.isNotEmpty
-                          ? CardState.error
-                          : CardState.regular,
-                ),
+              return cardGame.buildCardContent(
+                value,
+                flipped,
+                accepted.isNotEmpty
+                    ? CardState.highlighted
+                    : rejected.isNotEmpty
+                        ? CardState.error
+                        : CardState.regular,
               );
             },
           );

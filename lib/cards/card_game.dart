@@ -9,12 +9,12 @@ import 'package:provider/provider.dart';
 
 class CardGame<T extends Object, G> extends HookWidget {
   final Size cardSize;
-  final Widget Function(T, CardState) cardBuilder;
+  final Widget Function(T, bool flipped, CardState) cardBuilder;
   final List<CardGroup<T, G>> cardGroups;
   final Widget Function(CardState) emptyGroupBuilder;
 
   final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
-  final Function(CardMoveDetails<T, G>, G newGroupValue) onCardMoved;
+  final Function(CardMoveDetails<T, G>, G newGroupValue)? onCardMoved;
 
   const CardGame({
     super.key,
@@ -23,15 +23,17 @@ class CardGame<T extends Object, G> extends HookWidget {
     required this.cardGroups,
     required this.emptyGroupBuilder,
     this.canMoveCard,
-    required this.onCardMoved,
+    this.onCardMoved,
   });
 
-  Widget buildCardContent(T value, CardState state) => cardBuilder(value, state);
+  Widget buildCardContent(T value, bool flipped, CardState state) => cardBuilder(value, flipped, state);
 
   Widget buildEmptyGroup(CardState state) => emptyGroupBuilder(state);
 
   @override
   Widget build(BuildContext context) {
+    final onCardMoved = this.onCardMoved;
+
     final draggingState = useState<({CardMoveDetails<T, G> moveDetails, Offset offset})?>(null);
     final draggingValue = draggingState.value;
 
@@ -45,7 +47,8 @@ class CardGame<T extends Object, G> extends HookWidget {
                 top: group.position.dy,
                 width: cardSize.width,
                 height: cardSize.height,
-                child: draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
+                child: onCardMoved == null ||
+                        draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
                     ? buildEmptyGroup(CardState.regular)
                     : DragTarget<CardMoveDetails<T, G>>(
                         onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
@@ -88,6 +91,7 @@ class CardGame<T extends Object, G> extends HookWidget {
                       child: Card<T, G>(
                         value: value,
                         groupValue: group.value,
+                        flipped: group.isFlipped(i, value),
                         canBeDraggedOnto: group.canBeDraggedOnto(i, value),
                         currentlyDraggedCard: draggingValue?.moveDetails,
                         canMoveCard: canMoveCard,

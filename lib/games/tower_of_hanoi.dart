@@ -54,7 +54,7 @@ class TowerOfHanoi extends HookWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          cardBuilder: (value, state) => AnimatedContainer(
+          cardBuilder: (value, flipped, state) => AnimatedContainer(
             duration: Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             decoration: BoxDecoration(

@@ -1,4 +1,4 @@
-import 'package:cards/games/tower_of_hanoi.dart';
+import 'package:cards/games/war.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -22,7 +22,7 @@ class HomePage extends HookWidget {
     return Scaffold(
       backgroundColor: Colors.green,
       body: SafeArea(
-        child: TowerOfHanoi(amount: 6),
+        child: War(numPlayers: 3),
       ),
     );
   }
