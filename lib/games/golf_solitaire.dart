@@ -59,50 +59,46 @@ class GolfSolitaire extends HookWidget {
   Widget build(BuildContext context) {
     final state = useState(GolfSolitaireState.initialState);
 
-    return Stack(
+    return CardGame<SuitedCard, dynamic>(
+      style: deckStyle(sizeMultiplier: 1.2),
       children: [
-        CardGame<SuitedCard, dynamic>(
-          style: deckStyle(sizeMultiplier: 1.2),
+        Row(
           children: [
-            Row(
+            SizedBox(width: 8),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: state.value.cards
+                  .mapIndexed((i, column) => CardRow<SuitedCard, dynamic>(
+                        value: i,
+                        values: column,
+                        spacing: 30,
+                        maxGrabStackSize: 0,
+                        onCardPressed: (card) {
+                          if (state.value.canSelect(card)) {
+                            state.value = state.value.withSelection(card);
+                          }
+                        },
+                      ))
+                  .toList(),
+            ),
+            Spacer(flex: 2),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 40,
               children: [
-                SizedBox(width: 8),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: state.value.cards
-                      .mapIndexed((i, column) => CardRow<SuitedCard, dynamic>(
-                            value: i,
-                            values: column,
-                            spacing: 30,
-                            maxGrabStackSize: 0,
-                            onCardPressed: (card) {
-                              if (state.value.canSelect(card)) {
-                                state.value = state.value.withSelection(card);
-                              }
-                            },
-                          ))
-                      .toList(),
+                CardDeck<SuitedCard, dynamic>(
+                  value: 'deck',
+                  values: state.value.deck,
+                  isCardFlipped: (_, __) => true,
+                  onCardPressed: (_) => state.value = state.value.withDraw(),
                 ),
-                Spacer(flex: 2),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 40,
-                  children: [
-                    CardDeck<SuitedCard, dynamic>(
-                      value: 'deck',
-                      values: state.value.deck,
-                      isCardFlipped: (_, __) => true,
-                      onCardPressed: (_) => state.value = state.value.withDraw(),
-                    ),
-                    CardDeck<SuitedCard, dynamic>(
-                      value: 'completed',
-                      values: state.value.completedCards,
-                    ),
-                  ],
+                CardDeck<SuitedCard, dynamic>(
+                  value: 'completed',
+                  values: state.value.completedCards,
                 ),
-                Spacer(),
               ],
             ),
+            Spacer(),
           ],
         ),
       ],
