@@ -9,9 +9,10 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   final G value;
   final List<T> values;
 
+  final bool Function(int index, T value)? isCardFlipped;
   final Function(T)? onCardPressed;
-  final bool Function(CardMoveDetails<T, G>)? canMoveCard;
-  final Function(CardMoveDetails<T, G>)? onCardMoved;
+  final bool Function(CardMoveDetails<T, G>)? canMoveCardHere;
+  final Function(CardMoveDetails<T, G>)? onCardMovedHere;
 
   int getPriority(int index, T value);
   Offset getCardOffset(int index, T value);
@@ -19,23 +20,23 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
     return [value];
   }
 
-  bool isFlipped(int index, T value) => false;
   bool canBeDraggedOnto(int index, T value) => false;
 
   const CardGroup({
     super.key,
     required this.value,
     required this.values,
+    this.isCardFlipped,
     this.onCardPressed,
-    this.canMoveCard,
-    this.onCardMoved,
+    this.canMoveCardHere,
+    this.onCardMovedHere,
   });
 }
 
 class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
-  final bool Function(int index, T value)? isCardFlipped;
-
   final Offset cardOffset;
+
+  final bool Function(int index, T value)? canCardBeGrabbed;
   final int? maxGrabStackSize;
 
   const CardLinearGroup({
@@ -43,10 +44,11 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
-    super.canMoveCard,
-    super.onCardMoved,
-    this.isCardFlipped,
+    super.canMoveCardHere,
+    super.onCardMovedHere,
+    super.isCardFlipped,
     required this.cardOffset,
+    this.canCardBeGrabbed,
     required this.maxGrabStackSize,
   });
 
@@ -80,12 +82,11 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   }
 
   @override
-  bool isFlipped(int index, T value) {
-    return isCardFlipped?.call(index, value) ?? false;
-  }
-
-  @override
   List<T>? getDraggableCardValues(int index, T value) {
+    if (!(canCardBeGrabbed?.call(index, value) ?? true)) {
+      return null;
+    }
+
     final maxGrabStackSize = this.maxGrabStackSize;
     final grabStackSize = values.length - index;
 
@@ -108,9 +109,10 @@ class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
-    super.canMoveCard,
-    super.onCardMoved,
+    super.canMoveCardHere,
+    super.onCardMovedHere,
     super.isCardFlipped,
+    super.canCardBeGrabbed,
     super.maxGrabStackSize,
     double spacing = 20,
   }) : super(cardOffset: Offset(0, spacing));
@@ -123,6 +125,7 @@ class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.values,
     super.onCardPressed,
     super.isCardFlipped,
+    super.canCardBeGrabbed,
     super.maxGrabStackSize,
     double spacing = 20,
   }) : super(cardOffset: Offset(spacing, 0));
@@ -134,9 +137,23 @@ class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
-    super.canMoveCard,
-    super.onCardMoved,
+    super.canMoveCardHere,
+    super.onCardMovedHere,
     super.isCardFlipped,
     bool canGrab = false,
   }) : super(cardOffset: Offset.zero, maxGrabStackSize: canGrab ? 1 : 0);
+
+  CardDeck.flipped({
+    super.key,
+    required super.value,
+    required super.values,
+    super.onCardPressed,
+    super.canMoveCardHere,
+    super.onCardMovedHere,
+    bool canGrab = false,
+  }) : super(
+          cardOffset: Offset.zero,
+          maxGrabStackSize: canGrab ? 1 : 0,
+          isCardFlipped: (_, __) => true,
+        );
 }

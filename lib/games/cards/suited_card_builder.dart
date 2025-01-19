@@ -21,8 +21,11 @@ class SuitedCardBuilder extends StatelessWidget {
           border: Border.all(color: Colors.black, width: 2),
         ),
         padding: EdgeInsets.all(1),
-        child: PlayingCardView(
-          card: PlayingCard(getSuit(card), getValue(card)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: PlayingCardView(
+            card: PlayingCard(getSuit(card), getValue(card)),
+          ),
         ),
       ),
     );

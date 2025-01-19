@@ -20,7 +20,17 @@ class SuitedCard extends Equatable {
   List<Object?> get props => [suit, value];
 }
 
-enum CardSuit { hearts, diamonds, clubs, spades }
+enum CardSuitColor { black, red }
+
+enum CardSuit {
+  hearts(CardSuitColor.red),
+  diamonds(CardSuitColor.red),
+  clubs(CardSuitColor.black),
+  spades(CardSuitColor.black);
+
+  final CardSuitColor color;
+  const CardSuit(this.color);
+}
 
 sealed class SuitedCardValue {}
 

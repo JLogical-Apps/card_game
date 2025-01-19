@@ -38,7 +38,8 @@ class CardGame<T extends Object, G> extends HookWidget {
                   .where((entry) => cardGameState.cardGroups.containsKey(entry.key))
                   .map((entry) {
                 final (:group, :offset) = entry.value;
-                final onCardMoved = group.onCardMoved;
+                final canMoveCardHere = group.canMoveCardHere;
+                final onCardMoved = group.onCardMovedHere;
 
                 return AnimatedPositioned(
                   key: ValueKey('${group.value} - empty'),
@@ -52,7 +53,9 @@ class CardGame<T extends Object, G> extends HookWidget {
                           draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
                       ? style.buildEmptyGroup(CardState.regular)
                       : DragTarget<CardMoveDetails<T, G>>(
-                          onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
+                          onWillAcceptWithDetails: (details) =>
+                              details.data.fromGroupValue != group.value &&
+                              (canMoveCardHere?.call(details.data) ?? false),
                           onAcceptWithDetails: (details) => onCardMoved(details.data),
                           builder: (context, accepted, rejected) => style.buildEmptyGroup(
                             accepted.isNotEmpty
@@ -93,11 +96,11 @@ class CardGame<T extends Object, G> extends HookWidget {
                           child: Card<T, G>(
                             value: value,
                             group: group,
-                            flipped: group.isFlipped(i, value),
+                            flipped: group.isCardFlipped?.call(i, value) ?? false,
                             canBeDraggedOnto: group.canBeDraggedOnto(i, value),
                             currentlyDraggedCard: draggingValue?.moveDetails,
-                            canMoveCard: (move, newGroup) => newGroup.canMoveCard?.call(move) ?? true,
-                            onCardMoved: (move, newGroup) => newGroup.onCardMoved?.call(move),
+                            canMoveCard: (move, newGroup) => newGroup.canMoveCardHere?.call(move) ?? true,
+                            onCardMoved: (move, newGroup) => newGroup.onCardMovedHere?.call(move),
                             onPressed: () => group.onCardPressed?.call(value),
                             draggableCardValues: group.getDraggableCardValues(i, value),
                             onDragUpdated: (moveDetails, offset) => draggingState.value = (

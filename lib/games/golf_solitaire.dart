@@ -86,10 +86,9 @@ class GolfSolitaire extends HookWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 40,
               children: [
-                CardDeck<SuitedCard, dynamic>(
+                CardDeck<SuitedCard, dynamic>.flipped(
                   value: 'deck',
                   values: state.value.deck,
-                  isCardFlipped: (_, __) => true,
                   onCardPressed: (_) => state.value = state.value.withDraw(),
                 ),
                 CardDeck<SuitedCard, dynamic>(

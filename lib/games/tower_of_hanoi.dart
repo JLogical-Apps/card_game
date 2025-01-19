@@ -33,12 +33,12 @@ class TowerOfHanoi extends HookWidget {
                         value: i,
                         values: states,
                         maxGrabStackSize: 1,
-                        canMoveCard: (move) {
+                        canMoveCardHere: (move) {
                           final movingCard = move.cardValues.last;
                           final movingOnto = states.lastOrNull;
                           return movingOnto == null || movingCard < movingOnto;
                         },
-                        onCardMoved: (move) {
+                        onCardMovedHere: (move) {
                           final newCards = [...cardsState.value];
                           newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
                           newCards[i].addAll(move.cardValues);

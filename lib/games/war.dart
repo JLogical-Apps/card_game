@@ -111,10 +111,9 @@ class War extends HookWidget {
                     children: [
                       Stack(
                         children: [
-                          CardDeck<SuitedCard, dynamic>(
+                          CardDeck<SuitedCard, dynamic>.flipped(
                             value: 'deck: $i',
                             values: warState.value.playerDecks[i],
-                            isCardFlipped: (_, __) => true,
                           ),
                           Positioned.fill(
                             child: Center(
