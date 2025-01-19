@@ -7,8 +7,8 @@ class SuitedCard extends Equatable {
   const SuitedCard({required this.suit, required this.value});
 
   static List<SuitedCard> get deck => CardSuit.values
-      .expand((suit) => [
-            ...List.generate(10 - 2, (i) => 2 + i).map((value) => NumberSuitedCardValue(value: value)),
+      .expand((suit) => <SuitedCardValue>[
+            ...List.generate(10 - 2 + 1, (i) => 2 + i).map((value) => NumberSuitedCardValue(value: value)),
             JackSuitedCardValue(),
             QueenSuitedCardValue(),
             KingSuitedCardValue(),
@@ -33,10 +33,22 @@ class NumberSuitedCardValue extends SuitedCardValue with EquatableMixin {
   List<Object?> get props => [value];
 }
 
-class JackSuitedCardValue extends SuitedCardValue {}
+class JackSuitedCardValue extends SuitedCardValue with EquatableMixin {
+  @override
+  List<Object?> get props => [];
+}
 
-class QueenSuitedCardValue extends SuitedCardValue {}
+class QueenSuitedCardValue extends SuitedCardValue with EquatableMixin {
+  @override
+  List<Object?> get props => [];
+}
 
-class KingSuitedCardValue extends SuitedCardValue {}
+class KingSuitedCardValue extends SuitedCardValue with EquatableMixin {
+  @override
+  List<Object?> get props => [];
+}
 
-class AceSuitedCardValue extends SuitedCardValue {}
+class AceSuitedCardValue extends SuitedCardValue with EquatableMixin {
+  @override
+  List<Object?> get props => [];
+}
