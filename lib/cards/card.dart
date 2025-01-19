@@ -1,4 +1,5 @@
 import 'package:cards/cards/card_game.dart';
+import 'package:cards/cards/card_group.dart';
 import 'package:cards/cards/card_move_details.dart';
 import 'package:cards/cards/card_state.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class Card<T extends Object, G> extends HookWidget {
   final T value;
-  final G? groupValue;
+  final CardGroup<T, G>? group;
 
   final bool flipped;
 
@@ -15,8 +16,8 @@ class Card<T extends Object, G> extends HookWidget {
 
   final bool canBeDraggedOnto;
   final Function()? onPressed;
-  final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
-  final Function(CardMoveDetails<T, G>, G newGroupValue)? onCardMoved;
+  final bool Function(CardMoveDetails<T, G>, CardGroup<T, G> newGroup)? canMoveCard;
+  final Function(CardMoveDetails<T, G>, CardGroup<T, G> newGroup)? onCardMoved;
   final Function(CardMoveDetails<T, G>, Offset) onDragUpdated;
   final Function() onDragEnded;
   final List<T>? draggableCardValues;
@@ -24,7 +25,7 @@ class Card<T extends Object, G> extends HookWidget {
   const Card({
     super.key,
     required this.value,
-    this.groupValue,
+    this.group,
     required this.flipped,
     this.canBeDraggedOnto = false,
     this.currentlyDraggedCard,
@@ -38,7 +39,7 @@ class Card<T extends Object, G> extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final groupValue = this.groupValue;
+    final group = this.group;
     final draggableCardValues = this.draggableCardValues;
     final onCardMoved = this.onCardMoved;
 
@@ -47,14 +48,14 @@ class Card<T extends Object, G> extends HookWidget {
 
     Widget widget = onCardMoved == null ||
             dragStartOffset.value != null ||
-            groupValue == null ||
-            currentlyDraggedCard?.fromGroupValue == groupValue ||
+            group == null ||
+            currentlyDraggedCard?.fromGroupValue == group.value ||
             !canBeDraggedOnto
         ? cardGameState.buildCardContent(value, flipped, CardState.regular)
         : DragTarget<CardMoveDetails<T, G>>(
             onWillAcceptWithDetails: (details) =>
-                details.data.fromGroupValue != groupValue && (canMoveCard?.call(details.data, groupValue) ?? true),
-            onAcceptWithDetails: (details) => onCardMoved(details.data, groupValue),
+                details.data.fromGroupValue != group.value && (canMoveCard?.call(details.data, group) ?? true),
+            onAcceptWithDetails: (details) => onCardMoved(details.data, group),
             builder: (context, accepted, rejected) {
               return cardGameState.buildCardContent(
                 value,
@@ -72,10 +73,10 @@ class Card<T extends Object, G> extends HookWidget {
       widget = GestureDetector(onTap: onPressed, child: widget);
     }
 
-    if (groupValue != null && draggableCardValues != null) {
+    if (group != null && draggableCardValues != null) {
       final cardMoveDetails = CardMoveDetails<T, G>(
         cardValues: draggableCardValues,
-        fromGroupValue: groupValue as G,
+        fromGroupValue: group.value,
       );
       widget = Draggable<CardMoveDetails<T, G>>(
         data: cardMoveDetails,

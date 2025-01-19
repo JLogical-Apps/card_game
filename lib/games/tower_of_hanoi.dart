@@ -20,17 +20,6 @@ class TowerOfHanoi extends HookWidget {
     final cardsState = useState(initialCards);
 
     return CardGame<int, int>(
-      canMoveCard: (move, newGroupValue) {
-        final movingCard = move.cardValues.last;
-        final movingOnto = cardsState.value[newGroupValue].lastOrNull;
-        return movingOnto == null || movingCard < movingOnto;
-      },
-      onCardMoved: (move, newGroupValue) {
-        final newCards = [...cardsState.value];
-        newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
-        newCards[newGroupValue].addAll(move.cardValues);
-        cardsState.value = newCards;
-      },
       style: numericCardStyle(),
       children: [
         Align(
@@ -44,6 +33,17 @@ class TowerOfHanoi extends HookWidget {
                         value: i,
                         values: states,
                         maxGrabStackSize: 1,
+                        canMoveCard: (move) {
+                          final movingCard = move.cardValues.last;
+                          final movingOnto = states.lastOrNull;
+                          return movingOnto == null || movingCard < movingOnto;
+                        },
+                        onCardMoved: (move) {
+                          final newCards = [...cardsState.value];
+                          newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
+                          newCards[i].addAll(move.cardValues);
+                          cardsState.value = newCards;
+                        },
                       ))
                   .toList(),
             ),

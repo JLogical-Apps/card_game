@@ -1,4 +1,5 @@
 import 'package:cards/cards/card_game.dart';
+import 'package:cards/cards/card_move_details.dart';
 import 'package:cards/utils/build_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,6 +10,8 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   final List<T> values;
 
   final Function(T)? onCardPressed;
+  final bool Function(CardMoveDetails<T, G>)? canMoveCard;
+  final Function(CardMoveDetails<T, G>)? onCardMoved;
 
   int getPriority(int index, T value);
   Offset getCardOffset(int index, T value);
@@ -24,6 +27,8 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
     required this.value,
     required this.values,
     this.onCardPressed,
+    this.canMoveCard,
+    this.onCardMoved,
   });
 }
 
@@ -38,6 +43,8 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
+    super.canMoveCard,
+    super.onCardMoved,
     this.isCardFlipped,
     required this.cardOffset,
     required this.maxGrabStackSize,
@@ -101,6 +108,8 @@ class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
+    super.canMoveCard,
+    super.onCardMoved,
     super.isCardFlipped,
     super.maxGrabStackSize,
     double spacing = 20,
@@ -125,6 +134,8 @@ class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
     required super.value,
     required super.values,
     super.onCardPressed,
+    super.canMoveCard,
+    super.onCardMoved,
     super.isCardFlipped,
     bool canGrab = false,
   }) : super(cardOffset: Offset.zero, maxGrabStackSize: canGrab ? 1 : 0);
