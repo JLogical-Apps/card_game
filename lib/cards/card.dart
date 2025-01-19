@@ -41,20 +41,20 @@ class Card<T extends Object, G> extends HookWidget {
     final onCardMoved = this.onCardMoved;
 
     final dragStartOffset = useState<Offset?>(null);
-    final cardGame = context.watch<CardGame<T, G>>();
+    final cardGameState = context.watch<CardGameState<T, G>>();
 
     Widget widget = onCardMoved == null ||
             dragStartOffset.value != null ||
             groupValue == null ||
             currentlyDraggedCard?.fromGroupValue == groupValue ||
             !canBeDraggedOnto
-        ? cardGame.buildCardContent(value, flipped, CardState.regular)
+        ? cardGameState.buildCardContent(value, flipped, CardState.regular)
         : DragTarget<CardMoveDetails<T, G>>(
             onWillAcceptWithDetails: (details) =>
                 details.data.fromGroupValue != groupValue && (canMoveCard?.call(details.data, groupValue) ?? true),
             onAcceptWithDetails: (details) => onCardMoved(details.data, groupValue),
             builder: (context, accepted, rejected) {
-              return cardGame.buildCardContent(
+              return cardGameState.buildCardContent(
                 value,
                 flipped,
                 accepted.isNotEmpty

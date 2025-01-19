@@ -90,87 +90,95 @@ class War extends HookWidget {
   Widget build(BuildContext context) {
     final warState = useState(WarState.getInitialState(numPlayers));
 
-    return Stack(
-      children: [
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            warState.value = warState.value.withAcceptOrDraw();
-          },
-          child: CardGame<SuitedCard, dynamic>(
-            cardGroups: [
-              ...List.generate(
-                  numPlayers,
-                  (i) => CardDeck(
-                        value: 'deck: $i',
-                        values: warState.value.playerDecks[i],
-                        position: Offset(100, i * 150),
-                        isCardFlipped: (_, __) => true,
-                      )),
-              ...List.generate(
-                  numPlayers,
-                  (i) => CardRow(
-                        value: 'hand: $i',
-                        values: warState.value.playerHands[i],
-                        position: Offset(220, i * 150),
-                        maxGrabStackSize: 0,
-                      )),
-            ],
-            cardSize: Size(64, 89) * 1.5,
-            emptyGroupBuilder: (state) => AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              decoration: BoxDecoration(
-                color: switch (state) {
-                  CardState.regular => Colors.white,
-                  CardState.highlighted => Color(0xFF9FC7FF),
-                  CardState.error => Color(0xFFFFADAD),
-                }
-                    .withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        warState.value = warState.value.withAcceptOrDraw();
+      },
+      child: CardGame<SuitedCard, dynamic>(
+        cardSize: Size(64, 89) * 1.5,
+        emptyGroupBuilder: (state) => AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOutCubic,
+          decoration: BoxDecoration(
+            color: switch (state) {
+              CardState.regular => Colors.white,
+              CardState.highlighted => Color(0xFF9FC7FF),
+              CardState.error => Color(0xFFFFADAD),
+            }
+                .withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        cardBuilder: (value, flipped, state) => AnimatedFlippable(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOutCubic,
+          isFlipped: flipped,
+          front: SuitedCardBuilder(card: value),
+          back: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
             ),
-            cardBuilder: (value, flipped, state) => AnimatedFlippable(
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              isFlipped: flipped,
-              front: SuitedCardBuilder(card: value),
-              back: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 2),
+          ),
+        ),
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: 40),
+            child: Column(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(
+                numPlayers,
+                (i) => Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    spacing: 20,
+                    children: [
+                      Stack(
+                        children: [
+                          CardDeck<SuitedCard, dynamic>(
+                            value: 'deck: $i',
+                            values: warState.value.playerDecks[i],
+                            isCardFlipped: (_, __) => true,
+                          ),
+                          Positioned.fill(
+                            child: Center(
+                              child: Text(
+                                warState.value.playerDecks[i].length.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .copyWith(fontFeatures: [FontFeature.tabularFigures()]),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: CardRow<SuitedCard, dynamic>(
+                          value: 'hand: $i',
+                          values: warState.value.playerHands[i],
+                          maxGrabStackSize: 0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        ...List.generate(
-            numPlayers,
-            (i) => Positioned(
-                  left: 100,
-                  width: 96,
-                  top: i * 150,
-                  height: 135,
-                  child: Center(
-                    child: Text(
-                      warState.value.playerDecks[i].length.toString(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(fontFeatures: [FontFeature.tabularFigures()]),
-                    ),
-                  ),
-                )),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: ElevatedButton(
-            onPressed: () => warState.value = WarState.getInitialState(numPlayers),
-            style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
-            child: Icon(Icons.restart_alt),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ElevatedButton(
+              onPressed: () => warState.value = WarState.getInitialState(numPlayers),
+              style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+              child: Icon(Icons.restart_alt),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

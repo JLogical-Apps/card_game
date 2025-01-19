@@ -63,25 +63,6 @@ class GolfSolitiare extends HookWidget {
     return Stack(
       children: [
         CardGame<SuitedCard, dynamic>(
-          cardGroups: [
-            ...state.value.cards.mapIndexed((i, column) => CardRow(
-                  value: i,
-                  values: column,
-                  position: Offset(10, i * 115),
-              spacing: 30,
-                )),
-            CardDeck(
-              value: 'deck',
-              values: state.value.deck,
-              position: Offset(300, 250),
-              isCardFlipped: (_, __) => true,
-            ),
-            CardDeck(
-              value: 'completed',
-              values: state.value.completedCards,
-              position: Offset(300, 400),
-            ),
-          ],
           cardSize: Size(64, 89) * 1.2,
           emptyGroupBuilder: (state) => AnimatedContainer(
             duration: Duration(milliseconds: 300),
@@ -115,6 +96,41 @@ class GolfSolitiare extends HookWidget {
               ),
             ),
           ),
+          children: [
+            Row(
+              children: [
+                SizedBox(width: 8),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: state.value.cards
+                      .mapIndexed((i, column) => CardRow<SuitedCard, dynamic>(
+                            value: i,
+                            values: column,
+                            spacing: 30,
+                            maxGrabStackSize: 0,
+                          ))
+                      .toList(),
+                ),
+                Spacer(flex: 2),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 40,
+                  children: [
+                    CardDeck<SuitedCard, dynamic>(
+                      value: 'deck',
+                      values: state.value.deck,
+                      isCardFlipped: (_, __) => true,
+                    ),
+                    CardDeck<SuitedCard, dynamic>(
+                      value: 'completed',
+                      values: state.value.completedCards,
+                    ),
+                  ],
+                ),
+                Spacer(),
+              ],
+            ),
+          ],
         ),
       ],
     );
