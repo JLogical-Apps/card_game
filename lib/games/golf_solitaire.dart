@@ -72,27 +72,16 @@ class GolfSolitiare extends HookWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          cardBuilder: (value, flipped, cardState) => GestureDetector(
-            onTap: () {
-              if (!state.value.deck.contains(value) &&
-                  !state.value.completedCards.contains(value) &&
-                  state.value.canSelect(value)) {
-                state.value = state.value.withSelection(value);
-              } else if (state.value.canDraw && state.value.deck.contains(value)) {
-                state.value = state.value.withDraw();
-              }
-            },
-            child: AnimatedFlippable(
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              isFlipped: flipped,
-              front: SuitedCardBuilder(card: value),
-              back: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
+          cardBuilder: (value, flipped, cardState) => AnimatedFlippable(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOutCubic,
+            isFlipped: flipped,
+            front: SuitedCardBuilder(card: value),
+            back: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 2),
               ),
             ),
           ),
@@ -108,6 +97,11 @@ class GolfSolitiare extends HookWidget {
                             values: column,
                             spacing: 30,
                             maxGrabStackSize: 0,
+                            onCardPressed: (card) {
+                              if (state.value.canSelect(card)) {
+                                state.value = state.value.withSelection(card);
+                              }
+                            },
                           ))
                       .toList(),
                 ),
@@ -120,6 +114,7 @@ class GolfSolitiare extends HookWidget {
                       value: 'deck',
                       values: state.value.deck,
                       isCardFlipped: (_, __) => true,
+                      onCardPressed: (_) => state.value = state.value.withDraw(),
                     ),
                     CardDeck<SuitedCard, dynamic>(
                       value: 'completed',

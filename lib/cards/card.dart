@@ -14,6 +14,7 @@ class Card<T extends Object, G> extends HookWidget {
   final CardMoveDetails<T, G>? currentlyDraggedCard;
 
   final bool canBeDraggedOnto;
+  final Function()? onPressed;
   final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
   final Function(CardMoveDetails<T, G>, G newGroupValue)? onCardMoved;
   final Function(CardMoveDetails<T, G>, Offset) onDragUpdated;
@@ -28,6 +29,7 @@ class Card<T extends Object, G> extends HookWidget {
     this.canBeDraggedOnto = false,
     this.currentlyDraggedCard,
     this.draggableCardValues,
+    this.onPressed,
     this.canMoveCard,
     this.onCardMoved,
     required this.onDragUpdated,
@@ -65,6 +67,10 @@ class Card<T extends Object, G> extends HookWidget {
               );
             },
           );
+
+    if (onPressed != null) {
+      widget = GestureDetector(onTap: onPressed, child: widget);
+    }
 
     if (groupValue != null && draggableCardValues != null) {
       final cardMoveDetails = CardMoveDetails<T, G>(

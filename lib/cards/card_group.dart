@@ -8,6 +8,8 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   final G value;
   final List<T> values;
 
+  final Function(T)? onCardPressed;
+
   int getPriority(int index, T value);
   Offset getCardOffset(int index, T value);
   List<T>? getDraggableCardValues(int index, T value) {
@@ -17,7 +19,12 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   bool isFlipped(int index, T value) => false;
   bool canBeDraggedOnto(int index, T value) => false;
 
-  const CardGroup({super.key, required this.value, required this.values});
+  const CardGroup({
+    super.key,
+    required this.value,
+    required this.values,
+    this.onCardPressed,
+  });
 }
 
 class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
@@ -30,6 +37,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
     super.key,
     required super.value,
     required super.values,
+    super.onCardPressed,
     this.isCardFlipped,
     required this.cardOffset,
     required this.maxGrabStackSize,
@@ -92,6 +100,7 @@ class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
     super.key,
     required super.value,
     required super.values,
+    super.onCardPressed,
     super.isCardFlipped,
     super.maxGrabStackSize,
     double spacing = 20,
@@ -103,6 +112,7 @@ class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
     super.key,
     required super.value,
     required super.values,
+    super.onCardPressed,
     super.isCardFlipped,
     super.maxGrabStackSize,
     double spacing = 20,
@@ -114,6 +124,7 @@ class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
     super.key,
     required super.value,
     required super.values,
+    super.onCardPressed,
     super.isCardFlipped,
     bool canGrab = false,
   }) : super(cardOffset: Offset.zero, maxGrabStackSize: canGrab ? 1 : 0);

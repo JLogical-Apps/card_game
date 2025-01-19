@@ -64,29 +64,16 @@ class MemoryMatch extends HookWidget {
     return CardGame<SuitedCard, dynamic>(
       cardSize: Size(64, 89),
       emptyGroupBuilder: (state) => SizedBox.shrink(),
-      cardBuilder: (value, flipped, cardState) => GestureDetector(
-        onTap: () async {
-          if (state.value.canSelect &&
-              !state.value.selectedCards.contains(value) &&
-              !state.value.completedCards.contains(value)) {
-            state.value = state.value.withSelection(value);
-            if (!state.value.canSelect) {
-              await Future.delayed(Duration(milliseconds: 800));
-              state.value = state.value.withClearSelectionAndMaybeComplete();
-            }
-          }
-        },
-        child: AnimatedFlippable(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOutCubic,
-          isFlipped: flipped,
-          front: SuitedCardBuilder(card: value),
-          back: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
+      cardBuilder: (value, flipped, cardState) => AnimatedFlippable(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
+        isFlipped: flipped,
+        front: SuitedCardBuilder(card: value),
+        back: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 2),
           ),
         ),
       ),
@@ -100,11 +87,20 @@ class MemoryMatch extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ...row.mapIndexed((colNum, card) => CardDeck<SuitedCard, dynamic>(
-                            value: card,
-                            values: state.value.completedCards.contains(card) ? [] : [card],
-                            isCardFlipped: (_, __) => !state.value.selectedCards.contains(card),
-                            canGrab: false,
-                          )),
+                          value: card,
+                          values: state.value.completedCards.contains(card) ? [] : [card],
+                          isCardFlipped: (_, __) => !state.value.selectedCards.contains(card),
+                          canGrab: false,
+                          onCardPressed: (value) async {
+                            if (state.value.canSelect && !state.value.selectedCards.contains(value)) {
+                              state.value = state.value.withSelection(value);
+                              if (!state.value.canSelect) {
+                                await Future.delayed(Duration(milliseconds: 800));
+                                state.value = state.value.withClearSelectionAndMaybeComplete();
+                              }
+                            }
+                          },
+                        )),
                     if (rowNum == state.value.cardLayout.length ~/ 6) ...[
                       SizedBox(
                         width: 64,
