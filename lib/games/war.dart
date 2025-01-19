@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:cards/cards/cards.dart';
 import 'package:cards/games/cards/suited_card.dart';
-import 'package:cards/games/cards/suited_card_builder.dart';
 import 'package:cards/games/cards/suited_card_value_mapper.dart';
-import 'package:cards/widgets/animated_flippable.dart';
+import 'package:cards/games/styles/deck_style.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -96,33 +95,7 @@ class War extends HookWidget {
         warState.value = warState.value.withAcceptOrDraw();
       },
       child: CardGame<SuitedCard, dynamic>(
-        cardSize: Size(64, 89) * 1.5,
-        emptyGroupBuilder: (state) => AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOutCubic,
-          decoration: BoxDecoration(
-            color: switch (state) {
-              CardState.regular => Colors.white,
-              CardState.highlighted => Color(0xFF9FC7FF),
-              CardState.error => Color(0xFFFFADAD),
-            }
-                .withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        cardBuilder: (value, flipped, state) => AnimatedFlippable(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOutCubic,
-          isFlipped: flipped,
-          front: SuitedCardBuilder(card: value),
-          back: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-          ),
-        ),
+        style: deckStyle(sizeMultiplier: 1.5),
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: 40),

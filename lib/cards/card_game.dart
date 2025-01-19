@@ -1,4 +1,5 @@
 import 'package:cards/cards/card.dart';
+import 'package:cards/cards/card_game_style.dart';
 import 'package:cards/cards/card_group.dart';
 import 'package:cards/cards/card_move_details.dart';
 import 'package:cards/cards/card_state.dart';
@@ -8,25 +9,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 class CardGame<T extends Object, G> extends HookWidget {
-  final Size cardSize;
-  final Widget Function(T, bool flipped, CardState) cardBuilder;
+  final CardGameStyle<T> style;
   final List<Widget> children;
-  final Widget Function(CardState) emptyGroupBuilder;
 
   final bool Function(CardMoveDetails<T, G>, G newGroupValue)? canMoveCard;
   final Function(CardMoveDetails<T, G>, G newGroupValue)? onCardMoved;
 
   const CardGame({
     super.key,
-    required this.cardSize,
-    required this.cardBuilder,
+    required this.style,
     required this.children,
-    required this.emptyGroupBuilder,
     this.canMoveCard,
     this.onCardMoved,
   });
-
-  Widget buildEmptyGroup(CardState state) => emptyGroupBuilder(state);
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +32,9 @@ class CardGame<T extends Object, G> extends HookWidget {
 
     return ChangeNotifierProvider<CardGameState<T, G>>(
       create: (_) => CardGameState(
-        cardSize: cardSize,
+        cardSize: style.cardSize,
+        cardBuilder: style.cardBuilder,
         cardGroups: {},
-        cardBuilder: cardBuilder,
       ),
       child: Builder(
         builder: (context) {
@@ -56,23 +51,21 @@ class CardGame<T extends Object, G> extends HookWidget {
                   top: offset.dy,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOutCubic,
-                  width: cardSize.width,
-                  height: cardSize.height,
+                  width: style.cardSize.width,
+                  height: style.cardSize.height,
                   child: onCardMoved == null ||
                           draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
-                      ? buildEmptyGroup(CardState.regular)
+                      ? style.buildEmptyGroup(CardState.regular)
                       : DragTarget<CardMoveDetails<T, G>>(
                           onWillAcceptWithDetails: (details) => details.data.fromGroupValue != group.value,
                           onAcceptWithDetails: (details) => onCardMoved(details.data, group.value),
-                          builder: (context, accepted, rejected) {
-                            return buildEmptyGroup(
-                              accepted.isNotEmpty
-                                  ? CardState.highlighted
-                                  : rejected.isNotEmpty
-                                      ? CardState.error
-                                      : CardState.regular,
-                            );
-                          },
+                          builder: (context, accepted, rejected) => style.buildEmptyGroup(
+                            accepted.isNotEmpty
+                                ? CardState.highlighted
+                                : rejected.isNotEmpty
+                                    ? CardState.error
+                                    : CardState.regular,
+                          ),
                         ),
                 );
               }),
@@ -98,8 +91,8 @@ class CardGame<T extends Object, G> extends HookWidget {
                           left: isBeingDragged
                               ? groupOffset.dx + group.getCardOffset(i, value).dx + draggingState.value!.offset.dx
                               : groupOffset.dx + group.getCardOffset(i, value).dx,
-                          width: cardSize.width,
-                          height: cardSize.height,
+                          width: style.cardSize.width,
+                          height: style.cardSize.height,
                           duration: isBeingDragged ? Duration.zero : Duration(milliseconds: 300),
                           curve: Curves.easeInOutCubic,
                           child: Card<T, G>(

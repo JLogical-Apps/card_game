@@ -1,7 +1,6 @@
 import 'package:cards/cards/cards.dart';
 import 'package:cards/games/cards/suited_card.dart';
-import 'package:cards/games/cards/suited_card_builder.dart';
-import 'package:cards/widgets/animated_flippable.dart';
+import 'package:cards/games/styles/deck_style.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -62,21 +61,7 @@ class MemoryMatch extends HookWidget {
     final state = useState(MemoryMatchState.initialState);
 
     return CardGame<SuitedCard, dynamic>(
-      cardSize: Size(64, 89),
-      emptyGroupBuilder: (state) => SizedBox.shrink(),
-      cardBuilder: (value, flipped, cardState) => AnimatedFlippable(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOutCubic,
-        isFlipped: flipped,
-        front: SuitedCardBuilder(card: value),
-        back: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-        ),
-      ),
+      style: deckStyle(),
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
