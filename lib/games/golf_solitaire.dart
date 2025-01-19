@@ -52,8 +52,8 @@ class GolfSolitaireState {
       );
 }
 
-class GolfSolitiare extends HookWidget {
-  const GolfSolitiare({super.key});
+class GolfSolitaire extends HookWidget {
+  const GolfSolitaire({super.key});
 
   @override
   Widget build(BuildContext context) {
