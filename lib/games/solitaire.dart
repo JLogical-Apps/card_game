@@ -77,6 +77,17 @@ class SolitaireState {
     return withMoveFromDeck([card], newColumn);
   }
 
+  SolitaireState withAutoMoveFromCompleted(CardSuit suit) {
+    final card = completedCards[suit]!.last;
+
+    final newColumn = List.generate(7, (i) => canMove([card], i)).indexOf(true);
+    if (newColumn == -1) {
+      return this;
+    }
+
+    return withMoveFromCompleted(suit, newColumn);
+  }
+
   bool canComplete(SuitedCard card) {
     final completedSuitCards = completedCards[card.suit]!;
     return completedSuitCards.isEmpty && card.value == AceSuitedCardValue() ||
@@ -94,6 +105,10 @@ class SolitaireState {
       if (newRevealedCards[column].isEmpty && lastHiddenCard != null) {
         newRevealedCards[column] = [lastHiddenCard];
         newHiddenCards[column] = [...newHiddenCards[column]]..removeLast();
+      }
+
+      if (newHiddenCards.every((cards) => cards.isEmpty)) {
+        return withCompletedGame();
       }
 
       return copyWith(
@@ -158,6 +173,10 @@ class SolitaireState {
       newHiddenCards[oldColumn] = [...newHiddenCards[oldColumn]]..removeLast();
     }
 
+    if (newHiddenCards.every((cards) => cards.isEmpty)) {
+      return withCompletedGame();
+    }
+
     return copyWith(
       revealedCards: newRevealedCards,
       hiddenCards: newHiddenCards,
@@ -173,6 +192,35 @@ class SolitaireState {
     return copyWith(
       revealedCards: newRevealedCards,
       revealedDeck: newRevealedDeck,
+    );
+  }
+
+  SolitaireState withMoveFromCompleted(CardSuit suit, int column) {
+    final completedCard = completedCards[suit]!.last;
+    final newRevealedCards = [...revealedCards];
+    newRevealedCards[column] = [...newRevealedCards[column], completedCard];
+
+    final newCompletedCards = {
+      ...completedCards,
+      suit: [...completedCards[suit]!]..removeLast(),
+    };
+
+    return copyWith(
+      revealedCards: newRevealedCards,
+      completedCards: newCompletedCards,
+    );
+  }
+
+  SolitaireState withCompletedGame() {
+    return SolitaireState(
+      hiddenCards: List.generate(7, (i) => []),
+      revealedCards: List.generate(7, (i) => []),
+      deck: [],
+      revealedDeck: [],
+      completedCards: Map.fromEntries(CardSuit.values.map((suit) => MapEntry(
+            suit,
+            SuitedCard.values.map((value) => SuitedCard(suit: suit, value: value)).toList(),
+          ))),
     );
   }
 
@@ -261,6 +309,7 @@ class Solitaire extends HookWidget {
                           value: 'completed-cards: ${entry.key}',
                           values: entry.value,
                           canGrab: false,
+                          onCardPressed: (card) => state.value = state.value.withAutoMoveFromCompleted(entry.key),
                         ),
                         SizedBox(height: 4),
                       ]),

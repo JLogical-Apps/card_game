@@ -6,15 +6,16 @@ class SuitedCard extends Equatable {
 
   const SuitedCard({required this.suit, required this.value});
 
-  static List<SuitedCard> get deck => CardSuit.values
-      .expand((suit) => <SuitedCardValue>[
-            ...List.generate(10 - 2 + 1, (i) => 2 + i).map((value) => NumberSuitedCardValue(value: value)),
-            JackSuitedCardValue(),
-            QueenSuitedCardValue(),
-            KingSuitedCardValue(),
-            AceSuitedCardValue(),
-          ].map((value) => SuitedCard(suit: suit, value: value)))
-      .toList();
+  static List<SuitedCard> get deck =>
+      CardSuit.values.expand((suit) => values.map((value) => SuitedCard(suit: suit, value: value))).toList();
+
+  static List<SuitedCardValue> get values => [
+        ...List.generate(10 - 2 + 1, (i) => 2 + i).map((value) => NumberSuitedCardValue(value: value)),
+        JackSuitedCardValue(),
+        QueenSuitedCardValue(),
+        KingSuitedCardValue(),
+        AceSuitedCardValue(),
+      ];
 
   @override
   List<Object?> get props => [suit, value];
