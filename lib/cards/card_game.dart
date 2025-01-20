@@ -23,6 +23,8 @@ class CardGame<T extends Object, G> extends HookWidget {
     final draggingState = useState<({CardMoveDetails<T, G> moveDetails, Offset offset})?>(null);
     final draggingValue = draggingState.value;
 
+    final cardsAnimatingBackState = useState(<List<T>, DateTime>{});
+
     return ChangeNotifierProvider<CardGameState<T, G>>(
       create: (_) => CardGameState(
         cardSize: style.cardSize,
@@ -73,7 +75,9 @@ class CardGame<T extends Object, G> extends HookWidget {
                   .groupListsBy((record) {
                     final (group, i, value) = record;
                     final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
-                    return isBeingDragged ? double.maxFinite : group.getPriority(i, value);
+                    final isAnimatingDragged = cardsAnimatingBackState.value.entries.any((entry) =>
+                        entry.key.contains(value) && DateTime.now().difference(entry.value).inMilliseconds < 300);
+                    return isBeingDragged || isAnimatingDragged ? double.maxFinite : group.getPriority(i, value);
                   })
                   .entries
                   .sortedBy((entry) => entry.key)
@@ -107,7 +111,13 @@ class CardGame<T extends Object, G> extends HookWidget {
                               moveDetails: moveDetails,
                               offset: offset,
                             ),
-                            onDragEnded: () => draggingState.value = null,
+                            onDragEnded: () {
+                              draggingState.value = null;
+                              cardsAnimatingBackState.value = {
+                                ...cardsAnimatingBackState.value,
+                                group.getDraggableCardValues(i, value)!: DateTime.now(),
+                              };
+                            },
                           ),
                         );
                       })),
