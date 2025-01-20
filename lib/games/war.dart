@@ -97,45 +97,47 @@ class War extends HookWidget {
       child: CardGame<SuitedCard, dynamic>(
         style: deckStyle(sizeMultiplier: 1.5),
         children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: 40),
-            child: Column(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(
-                numPlayers,
-                (i) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    spacing: 20,
-                    children: [
-                      Stack(
-                        children: [
-                          CardDeck<SuitedCard, dynamic>.flipped(
-                            value: 'deck: $i',
-                            values: warState.value.playerDecks[i],
-                          ),
-                          Positioned.fill(
-                            child: Center(
-                              child: Text(
-                                warState.value.playerDecks[i].length.toString(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium!
-                                    .copyWith(fontFeatures: [FontFeature.tabularFigures()]),
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 40),
+              child: Column(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(
+                  numPlayers,
+                  (i) => Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      spacing: 20,
+                      children: [
+                        Stack(
+                          children: [
+                            CardDeck<SuitedCard, dynamic>.flipped(
+                              value: 'deck: $i',
+                              values: warState.value.playerDecks[i],
+                            ),
+                            Positioned.fill(
+                              child: Center(
+                                child: Text(
+                                  warState.value.playerDecks[i].length.toString(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .copyWith(fontFeatures: [FontFeature.tabularFigures()]),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: CardRow<SuitedCard, dynamic>(
-                          value: 'hand: $i',
-                          values: warState.value.playerHands[i],
-                          maxGrabStackSize: 0,
+                          ],
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: CardRow<SuitedCard, dynamic>(
+                            value: 'hand: $i',
+                            values: warState.value.playerHands[i],
+                            maxGrabStackSize: 0,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -143,10 +145,13 @@ class War extends HookWidget {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: ElevatedButton(
-              onPressed: () => warState.value = WarState.getInitialState(numPlayers),
-              style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
-              child: Icon(Icons.restart_alt),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+              child: ElevatedButton(
+                onPressed: () => warState.value = WarState.getInitialState(numPlayers),
+                style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+                child: Icon(Icons.restart_alt),
+              ),
             ),
           ),
         ],

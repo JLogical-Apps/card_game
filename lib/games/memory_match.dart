@@ -63,55 +63,57 @@ class MemoryMatch extends HookWidget {
     return CardGame<SuitedCard, dynamic>(
       style: deckStyle(),
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: state.value.cardLayout
-              .slices(6)
-              .mapIndexed(
-                (rowNum, row) => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ...row.mapIndexed((colNum, card) => CardDeck<SuitedCard, dynamic>(
-                          value: card,
-                          values: state.value.completedCards.contains(card) ? [] : [card],
-                          isCardFlipped: (_, __) => !state.value.selectedCards.contains(card),
-                          canGrab: false,
-                          onCardPressed: (value) async {
-                            if (state.value.canSelect && !state.value.selectedCards.contains(value)) {
-                              state.value = state.value.withSelection(value);
-                              if (!state.value.canSelect) {
-                                await Future.delayed(Duration(milliseconds: 800));
-                                state.value = state.value.withClearSelectionAndMaybeComplete();
+        SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: state.value.cardLayout
+                .slices(6)
+                .mapIndexed(
+                  (rowNum, row) => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ...row.mapIndexed((colNum, card) => CardDeck<SuitedCard, dynamic>(
+                            value: card,
+                            values: state.value.completedCards.contains(card) ? [] : [card],
+                            isCardFlipped: (_, __) => !state.value.selectedCards.contains(card),
+                            canGrab: false,
+                            onCardPressed: (value) async {
+                              if (state.value.canSelect && !state.value.selectedCards.contains(value)) {
+                                state.value = state.value.withSelection(value);
+                                if (!state.value.canSelect) {
+                                  await Future.delayed(Duration(milliseconds: 800));
+                                  state.value = state.value.withClearSelectionAndMaybeComplete();
+                                }
                               }
-                            }
-                          },
-                        )),
-                    if (rowNum == state.value.cardLayout.length ~/ 6) ...[
-                      SizedBox(
-                        width: 64,
-                        height: 89,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                state.value.attemptedMatches.toString(),
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              Text('matches', style: Theme.of(context).textTheme.bodySmall),
-                            ],
+                            },
+                          )),
+                      if (rowNum == state.value.cardLayout.length ~/ 6) ...[
+                        SizedBox(
+                          width: 64,
+                          height: 89,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  state.value.attemptedMatches.toString(),
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text('matches', style: Theme.of(context).textTheme.bodySmall),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      CardDeck<SuitedCard, dynamic>(
-                        value: 'completed',
-                        values: state.value.completedCards,
-                      ),
+                        CardDeck<SuitedCard, dynamic>(
+                          value: 'completed',
+                          values: state.value.completedCards,
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              )
-              .toList(),
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ],
     );

@@ -251,71 +251,73 @@ class Solitaire extends HookWidget {
     return CardGame<SuitedCard, dynamic>(
       style: deckStyle(sizeMultiplier: 1.3),
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: List.generate(7, (i) {
-                  final hiddenCards = state.value.hiddenCards[i];
-                  final revealedCards = state.value.revealedCards[i];
+        SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: List.generate(7, (i) {
+                    final hiddenCards = state.value.hiddenCards[i];
+                    final revealedCards = state.value.revealedCards[i];
 
-                  return CardRow<SuitedCard, dynamic>(
-                    value: i,
-                    values: hiddenCards + revealedCards,
-                    canCardBeGrabbed: (_, card) => revealedCards.contains(card),
-                    isCardFlipped: (_, card) => hiddenCards.contains(card),
-                    onCardPressed: (card) {
-                      if (hiddenCards.contains(card)) {
-                        return;
-                      }
+                    return CardRow<SuitedCard, dynamic>(
+                      value: i,
+                      values: hiddenCards + revealedCards,
+                      canCardBeGrabbed: (_, card) => revealedCards.contains(card),
+                      isCardFlipped: (_, card) => hiddenCards.contains(card),
+                      onCardPressed: (card) {
+                        if (hiddenCards.contains(card)) {
+                          return;
+                        }
 
-                      final cardIndex = revealedCards.indexOf(card);
+                        final cardIndex = revealedCards.indexOf(card);
 
-                      state.value = state.value.withAutoMove(i, revealedCards.sublist(cardIndex));
-                    },
-                    canMoveCardHere: (move) => state.value.canMove(move.cardValues, i),
-                    onCardMovedHere: (move) =>
-                        state.value = state.value.withMove(move.cardValues, move.fromGroupValue, i),
-                  );
-                }).toList(),
-              ),
-              Spacer(),
-              Column(
-                children: [
-                  SizedBox(height: 4),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => state.value = state.value.withDrawOrRefresh(),
-                    child: CardDeck<SuitedCard, dynamic>.flipped(
-                      value: 'deck',
-                      values: state.value.deck,
+                        state.value = state.value.withAutoMove(i, revealedCards.sublist(cardIndex));
+                      },
+                      canMoveCardHere: (move) => state.value.canMove(move.cardValues, i),
+                      onCardMovedHere: (move) =>
+                          state.value = state.value.withMove(move.cardValues, move.fromGroupValue, i),
+                    );
+                  }).toList(),
+                ),
+                Spacer(),
+                Column(
+                  children: [
+                    SizedBox(height: 4),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => state.value = state.value.withDrawOrRefresh(),
+                      child: CardDeck<SuitedCard, dynamic>.flipped(
+                        value: 'deck',
+                        values: state.value.deck,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4),
-                  CardDeck<SuitedCard, dynamic>(
-                    value: 'revealed-deck',
-                    values: state.value.revealedDeck,
-                    canMoveCardHere: (_) => false,
-                    onCardPressed: (card) => state.value = state.value.withAutoMoveFromDeck(),
-                    canGrab: true,
-                  ),
-                  Spacer(),
-                  ...state.value.completedCards.entries.expand((entry) => [
-                        CardDeck<SuitedCard, dynamic>(
-                          value: 'completed-cards: ${entry.key}',
-                          values: entry.value,
-                          canGrab: false,
-                          onCardPressed: (card) => state.value = state.value.withAutoMoveFromCompleted(entry.key),
-                        ),
-                        SizedBox(height: 4),
-                      ]),
-                ],
-              ),
-            ],
+                    SizedBox(height: 4),
+                    CardDeck<SuitedCard, dynamic>(
+                      value: 'revealed-deck',
+                      values: state.value.revealedDeck,
+                      canMoveCardHere: (_) => false,
+                      onCardPressed: (card) => state.value = state.value.withAutoMoveFromDeck(),
+                      canGrab: true,
+                    ),
+                    Spacer(),
+                    ...state.value.completedCards.entries.expand((entry) => [
+                          CardDeck<SuitedCard, dynamic>(
+                            value: 'completed-cards: ${entry.key}',
+                            values: entry.value,
+                            canGrab: false,
+                            onCardPressed: (card) => state.value = state.value.withAutoMoveFromCompleted(entry.key),
+                          ),
+                          SizedBox(height: 4),
+                        ]),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],

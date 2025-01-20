@@ -21,9 +21,7 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green,
-      body: SafeArea(
-        child: Solitaire(),
-      ),
+      body: Solitaire(),
     );
   }
 }

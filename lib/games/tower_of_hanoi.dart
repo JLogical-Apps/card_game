@@ -22,39 +22,37 @@ class TowerOfHanoi extends HookWidget {
     return CardGame<int, int>(
       style: numericCardStyle(),
       children: [
-        Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: EdgeInsets.only(top: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: cardsState.value
-                  .mapIndexed((i, states) => CardColumn<int, int>(
-                        value: i,
-                        values: states,
-                        maxGrabStackSize: 1,
-                        canMoveCardHere: (move) {
-                          final movingCard = move.cardValues.last;
-                          final movingOnto = states.lastOrNull;
-                          return movingOnto == null || movingCard < movingOnto;
-                        },
-                        onCardMovedHere: (move) {
-                          final newCards = [...cardsState.value];
-                          newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
-                          newCards[i].addAll(move.cardValues);
-                          cardsState.value = newCards;
-                        },
-                      ))
-                  .toList(),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: ElevatedButton(
-            onPressed: () => cardsState.value = initialCards,
-            style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
-            child: Icon(Icons.restart_alt),
+        SafeArea(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: cardsState.value
+                    .mapIndexed((i, states) => CardColumn<int, int>(
+                          value: i,
+                          values: states,
+                          maxGrabStackSize: 1,
+                          canMoveCardHere: (move) {
+                            final movingCard = move.cardValues.last;
+                            final movingOnto = states.lastOrNull;
+                            return movingOnto == null || movingCard < movingOnto;
+                          },
+                          onCardMovedHere: (move) {
+                            final newCards = [...cardsState.value];
+                            newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
+                            newCards[i].addAll(move.cardValues);
+                            cardsState.value = newCards;
+                          },
+                        ))
+                    .toList(),
+              ),
+              Spacer(),
+              ElevatedButton(
+                onPressed: () => cardsState.value = initialCards,
+                style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+                child: Icon(Icons.restart_alt),
+              ),
+            ],
           ),
         ),
       ],
