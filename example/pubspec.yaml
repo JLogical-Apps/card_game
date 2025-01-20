@@ -1,7 +1,6 @@
-name: card_game
-description: "A new Flutter project."
+name: example
+description: "Example of card games."
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -10,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  collection: ^1.19.0
-  equatable: ^2.0.7
-  flutter_hooks: ^0.21.1-pre.4
-  playing_cards: ^0.4.1+11
-  provider: ^6.1.2
+  flutter_hooks:
+  collection:
+
+  card_game:
+    path: ../
 
 dev_dependencies:
   flutter_test:
