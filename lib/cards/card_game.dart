@@ -85,6 +85,10 @@ class CardGame<T extends Object, G> extends HookWidget {
                         final (group, i, value) = record;
                         final groupOffset = cardGameState.cardGroups[group.value]!.offset;
                         final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
+
+                        final canMoveCardHere = group.canMoveCardHere;
+                        final onCardMovedHere = group.onCardMovedHere;
+
                         return AnimatedPositioned(
                           key: ValueKey(value),
                           top: isBeingDragged
@@ -103,8 +107,8 @@ class CardGame<T extends Object, G> extends HookWidget {
                             flipped: group.isCardFlipped?.call(i, value) ?? false,
                             canBeDraggedOnto: group.canBeDraggedOnto(i, value),
                             currentlyDraggedCard: draggingValue?.moveDetails,
-                            canMoveCard: (move, newGroup) => newGroup.canMoveCardHere?.call(move) ?? true,
-                            onCardMoved: (move, newGroup) => newGroup.onCardMovedHere?.call(move),
+                            canMoveCardHere: (move) => canMoveCardHere?.call(move) ?? onCardMovedHere != null,
+                            onCardMovedHere: onCardMovedHere == null ? null : (move) => onCardMovedHere(move),
                             onPressed: () => group.onCardPressed?.call(value),
                             draggableCardValues: group.getDraggableCardValues(i, value),
                             onDragUpdated: (moveDetails, offset) => draggingState.value = (

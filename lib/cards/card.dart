@@ -16,8 +16,8 @@ class Card<T extends Object, G> extends HookWidget {
 
   final bool canBeDraggedOnto;
   final Function()? onPressed;
-  final bool Function(CardMoveDetails<T, G>, CardGroup<T, G> newGroup)? canMoveCard;
-  final Function(CardMoveDetails<T, G>, CardGroup<T, G> newGroup)? onCardMoved;
+  final bool Function(CardMoveDetails<T, G>) canMoveCardHere;
+  final Function(CardMoveDetails<T, G>)? onCardMovedHere;
   final Function(CardMoveDetails<T, G>, Offset) onDragUpdated;
   final Function() onDragEnded;
   final List<T>? draggableCardValues;
@@ -31,8 +31,8 @@ class Card<T extends Object, G> extends HookWidget {
     this.currentlyDraggedCard,
     this.draggableCardValues,
     this.onPressed,
-    this.canMoveCard,
-    this.onCardMoved,
+    required this.canMoveCardHere,
+    this.onCardMovedHere,
     required this.onDragUpdated,
     required this.onDragEnded,
   });
@@ -41,7 +41,7 @@ class Card<T extends Object, G> extends HookWidget {
   Widget build(BuildContext context) {
     final group = this.group;
     final draggableCardValues = this.draggableCardValues;
-    final onCardMoved = this.onCardMoved;
+    final onCardMoved = this.onCardMovedHere;
 
     final dragStartOffset = useState<Offset?>(null);
     final cardGameState = context.watch<CardGameState<T, G>>();
@@ -54,8 +54,8 @@ class Card<T extends Object, G> extends HookWidget {
     Widget widget = DragTarget<CardMoveDetails<T, G>>(
       onWillAcceptWithDetails: disableDrags
           ? null
-          : (details) => details.data.fromGroupValue != group.value && (canMoveCard?.call(details.data, group) ?? true),
-      onAcceptWithDetails: disableDrags ? null : (details) => onCardMoved(details.data, group),
+          : (details) => details.data.fromGroupValue != group.value && canMoveCardHere(details.data),
+      onAcceptWithDetails: disableDrags ? null : (details) => onCardMoved(details.data),
       builder: (context, accepted, rejected) {
         return cardGameState.buildCardContent(
           value,
