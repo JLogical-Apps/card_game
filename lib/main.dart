@@ -1,4 +1,9 @@
+import 'package:cards/game_view.dart';
+import 'package:cards/games/golf_solitaire.dart';
+import 'package:cards/games/memory_match.dart';
 import 'package:cards/games/solitaire.dart';
+import 'package:cards/games/tower_of_hanoi.dart';
+import 'package:cards/games/war.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -19,9 +24,31 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final games = {
+      'Towers Of Hanoi': TowerOfHanoi(),
+      'War': War(),
+      'Memory Match': MemoryMatch(),
+      'Golf Solitaire': GolfSolitaire(),
+      'Solitaire': Solitaire(),
+    };
     return Scaffold(
-      backgroundColor: Colors.green,
-      body: Solitaire(),
+      body: SafeArea(
+        child: ListView(
+          children: ListTile.divideTiles(
+            context: context,
+            tiles: games.entries.map(
+              (entry) {
+                return ListTile(
+                  title: Text(entry.key),
+                  onTap: () =>
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => GameView(cardGame: entry.value))),
+                  trailing: Icon(Icons.chevron_right),
+                );
+              },
+            ).toList(),
+          ).toList(),
+        ),
+      ),
     );
   }
 }
