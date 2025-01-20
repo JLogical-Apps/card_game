@@ -46,57 +46,60 @@ class Card<T extends Object, G> extends HookWidget {
     final dragStartOffset = useState<Offset?>(null);
     final cardGameState = context.watch<CardGameState<T, G>>();
 
-    Widget widget = onCardMoved == null ||
-            dragStartOffset.value != null ||
-            group == null ||
-            currentlyDraggedCard?.fromGroupValue == group.value ||
-            !canBeDraggedOnto
-        ? cardGameState.buildCardContent(value, flipped, CardState.regular)
-        : DragTarget<CardMoveDetails<T, G>>(
-            onWillAcceptWithDetails: (details) =>
-                details.data.fromGroupValue != group.value && (canMoveCard?.call(details.data, group) ?? true),
-            onAcceptWithDetails: (details) => onCardMoved(details.data, group),
-            builder: (context, accepted, rejected) {
-              return cardGameState.buildCardContent(
-                value,
-                flipped,
-                accepted.isNotEmpty
-                    ? CardState.highlighted
-                    : rejected.isNotEmpty
-                        ? CardState.error
-                        : CardState.regular,
-              );
-            },
+    final disableDrags = onCardMoved == null ||
+        dragStartOffset.value != null ||
+        group == null ||
+        currentlyDraggedCard?.fromGroupValue == group.value ||
+        !canBeDraggedOnto;
+    Widget widget = DragTarget<CardMoveDetails<T, G>>(
+      onWillAcceptWithDetails: disableDrags
+          ? null
+          : (details) => details.data.fromGroupValue != group.value && (canMoveCard?.call(details.data, group) ?? true),
+      onAcceptWithDetails: disableDrags ? null : (details) => onCardMoved(details.data, group),
+      builder: (context, accepted, rejected) {
+        return cardGameState.buildCardContent(
+          value,
+          flipped,
+          disableDrags
+              ? CardState.regular
+              : accepted.isNotEmpty
+                  ? CardState.highlighted
+                  : rejected.isNotEmpty
+                      ? CardState.error
+                      : CardState.regular,
+        );
+      },
+    );
+
+    widget = GestureDetector(onTap: onPressed, child: widget);
+
+    final cardMoveDetails = draggableCardValues == null || group == null
+        ? null
+        : CardMoveDetails<T, G>(
+            cardValues: draggableCardValues,
+            fromGroupValue: group.value,
           );
-
-    if (onPressed != null) {
-      widget = GestureDetector(onTap: onPressed, child: widget);
-    }
-
-    if (group != null && draggableCardValues != null) {
-      final cardMoveDetails = CardMoveDetails<T, G>(
-        cardValues: draggableCardValues,
-        fromGroupValue: group.value,
-      );
-      widget = Draggable<CardMoveDetails<T, G>>(
-        data: cardMoveDetails,
-        feedback: SizedBox.shrink(),
-        childWhenDragging: IgnorePointer(child: widget),
-        onDragUpdate: (details) {
-          dragStartOffset.value ??= details.localPosition;
-          onDragUpdated(cardMoveDetails, details.localPosition - dragStartOffset.value!);
-        },
-        onDraggableCanceled: (_, __) {
-          onDragEnded();
-          dragStartOffset.value = null;
-        },
-        onDragCompleted: () {
-          onDragEnded();
-          dragStartOffset.value = null;
-        },
-        child: widget,
-      );
-    }
+    widget = Draggable<CardMoveDetails<T, G>>(
+      data: cardMoveDetails,
+      feedback: SizedBox.shrink(),
+      childWhenDragging: IgnorePointer(child: widget),
+      onDragUpdate: cardMoveDetails == null
+          ? null
+          : (details) {
+              dragStartOffset.value ??= details.localPosition;
+              onDragUpdated(cardMoveDetails, details.localPosition - dragStartOffset.value!);
+            },
+      onDraggableCanceled: (_, __) {
+        onDragEnded();
+        dragStartOffset.value = null;
+      },
+      onDragCompleted: () {
+        onDragEnded();
+        dragStartOffset.value = null;
+      },
+      maxSimultaneousDrags: cardMoveDetails == null ? 0 : 1,
+      child: widget,
+    );
 
     return widget;
   }
