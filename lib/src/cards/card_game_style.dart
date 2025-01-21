@@ -11,16 +11,16 @@ class CardGameStyle<T> {
 
   /// Builds the widget representation of a card with the given value and state.
   ///
-  /// [value] is the card's value of type [T].
-  /// [flipped] determines if the card should show its back face.
-  /// [state] indicates the card's current interaction state.
+  /// `value` is the card's value of type [T].
+  /// `flipped` determines if the card should show its back face.
+  /// `state` indicates the card's current interaction state.
   final Widget Function(T value, bool flipped, CardState state) cardBuilder;
 
   /// Builds the widget representation of an empty card group.
   ///
-  /// [state] indicates the group's current interaction state, useful for
+  /// `state` indicates the group's current interaction state, useful for
   /// showing different appearances during drag-and-drop operations.
-  final Widget Function(CardState) emptyGroupBuilder;
+  final Widget Function(CardState state) emptyGroupBuilder;
 
   CardGameStyle({
     required this.cardSize,

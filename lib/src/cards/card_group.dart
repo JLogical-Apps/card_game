@@ -27,12 +27,12 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   /// Determines whether a stack of cards can be dropped onto this group.
   ///
   /// [details] contains information about the cards being moved and their source group.
-  final bool Function(CardMoveDetails<T, G>)? canMoveCardHere;
+  final bool Function(CardMoveDetails<T, G> details)? canMoveCardHere;
 
   /// Called when cards are successfully dropped onto this group.
   ///
   /// [details] contains information about the moved cards and their source group.
-  final Function(CardMoveDetails<T, G>)? onCardMovedHere;
+  final Function(CardMoveDetails<T, G> details)? onCardMovedHere;
 
   int getPriority(int index, T value);
   Offset getCardOffset(int index, T value);
