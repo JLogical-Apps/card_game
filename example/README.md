@@ -1,16 +1,62 @@
-# example
+```dart
+import 'package:card_game/card_game.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-A new Flutter project.
+class TowerOfHanoi extends HookWidget {
+  final int amount;
 
-## Getting Started
+  const TowerOfHanoi({super.key, this.amount = 4});
 
-This project is a starting point for a Flutter application.
+  List<List<int>> get initialCards => [
+        List.generate(amount, (i) => amount - i),
+        <int>[],
+        <int>[],
+      ];
 
-A few resources to get you started if this is your first Flutter project:
+  @override
+  Widget build(BuildContext context) {
+    final cardsState = useState(initialCards);
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    return CardGame<int, int>(
+      style: numericCardStyle(),
+      children: [
+        SafeArea(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: cardsState.value
+                    .mapIndexed((i, states) => CardColumn<int, int>(
+                          value: i,
+                          values: states,
+                          maxGrabStackSize: 1,
+                          canMoveCardHere: (move) {
+                            final movingCard = move.cardValues.last;
+                            final movingOnto = states.lastOrNull;
+                            return movingOnto == null || movingCard < movingOnto;
+                          },
+                          onCardMovedHere: (move) {
+                            final newCards = [...cardsState.value];
+                            newCards[move.fromGroupValue].removeLast();
+                            newCards[i].add(move.cardValues.first);
+                            cardsState.value = newCards;
+                          },
+                        ))
+                    .toList(),
+              ),
+              Spacer(),
+              ElevatedButton(
+                onPressed: () => cardsState.value = initialCards,
+                style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+                child: Icon(Icons.restart_alt),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
