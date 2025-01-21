@@ -1,4 +1,15 @@
+# card_game
+
 A declarative Flutter package for building card games with beautiful animations. Create card games with minimal code by defining the rules and letting the package handle the rest!
+
+## Table of Contents
+- [Features](#features)
+- [Examples](#examples)
+- [Getting Started](#getting-started)
+- [Core Concepts](#core-concepts)
+- [Customization](#customization)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
@@ -12,7 +23,7 @@ A declarative Flutter package for building card games with beautiful animations.
 - 🎲 Example implementations of popular card games (Solitaire, War, Memory Match, etc.)
 - 🎯 Built-in validation system for card movements
 
-# Examples
+## Examples
 
 Each example demonstrates different features of the card_game package. Check out the [example project](https://github.com/JLogical-Apps/card_game/tree/master/example/) for the complete source code.
 
@@ -120,7 +131,7 @@ This implementation shows:
 
 For more complex examples, check out the implementations of the other games in the example folder.
 
-## Running the Examples
+### Running the Examples
 
 To try out the examples:
 
