@@ -1,5 +1,5 @@
 name: card_game
-description: "A new Flutter project."
+description: A declarative Flutter package for building card games with beautiful animations. Create engaging card games by defining rules for standard playing cards or custom cards, with built-in support for drag-and-drop, card flipping, and automatic animations. Features flexible layouts with rows, columns, and decks, plus example implementations of classic games like Solitaire, War, and Memory Match.
 repository: https://github.com/JLogical-Apps/card_game
 issue_tracker: https://github.com/JLogical-Apps/card_game/issues
 
