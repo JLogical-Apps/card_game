@@ -7,15 +7,15 @@ version: 1.0.1
 
 screenshots:
   - path: screenshots/tower_of_hanoi.gif
-    description: Tower of Hanoi
+    description: Gameplay of Tower of Hanoi
   - path: screenshots/war.gif
-    description: War
+    description: Gameplay of War
   - path: screenshots/memory_match.gif
-    description: Memory Match
+    description: Gameplay of Memory Match
   - path: screenshots/golf_solitaire.gif
-    description: Golf Solitaire
+    description: Gameplay of Golf Solitaire
   - path: screenshots/solitaire.gif
-    description: Solitaire
+    description: Gameplay of Solitaire
 
 topics:
   - flutter
