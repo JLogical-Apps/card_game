@@ -3,7 +3,7 @@ description: A declarative Flutter package for building card games with beautifu
 repository: https://github.com/JLogical-Apps/card_game
 issue_tracker: https://github.com/JLogical-Apps/card_game/issues
 
-version: 1.0.0+1
+version: 1.0.0
 
 environment:
   sdk: ^3.6.0
@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   collection: ^1.19.0
   equatable: ^2.0.7
-  flutter_hooks: ^0.21.1-pre.4
+  flutter_hooks: ^0.20.5
   playing_cards: ^0.4.1+11
   provider: ^6.1.2
 
