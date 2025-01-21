@@ -2,8 +2,8 @@ import 'package:card_game/src/cards/card_game_style.dart';
 import 'package:card_game/src/cards/card_state.dart';
 import 'package:flutter/material.dart';
 
-CardGameStyle<int> numericCardStyle() => CardGameStyle(
-      cardSize: Size(80, 120),
+CardGameStyle<int> numericCardStyle({double sizeMultiplier = 1}) => CardGameStyle(
+      cardSize: Size(80, 120) * sizeMultiplier,
       emptyGroupBuilder: (state) => AnimatedContainer(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOutCubic,

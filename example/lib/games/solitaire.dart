@@ -246,7 +246,7 @@ class Solitaire extends HookWidget {
     final state = useState(SolitaireState.initialState);
 
     return CardGame<SuitedCard, dynamic>(
-      style: deckStyle(sizeMultiplier: 1.3),
+      style: deckCardStyle(sizeMultiplier: 1.3),
       children: [
         SafeArea(
           child: Padding(

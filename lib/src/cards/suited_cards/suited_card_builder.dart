@@ -2,6 +2,9 @@ import 'package:card_game/src/cards/suited_cards/suited_card.dart';
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
+/// A widget that renders a visual representation of a [SuitedCard].
+///
+/// Creates a standard playing card appearance with suit and value symbols.
 class SuitedCardBuilder extends StatelessWidget {
   final SuitedCard card;
 

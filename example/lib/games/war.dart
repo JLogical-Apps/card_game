@@ -92,7 +92,7 @@ class War extends HookWidget {
         warState.value = warState.value.withAcceptOrDraw();
       },
       child: CardGame<SuitedCard, dynamic>(
-        style: deckStyle(sizeMultiplier: 1.5),
+        style: deckCardStyle(sizeMultiplier: 1.5),
         children: [
           SafeArea(
             child: Padding(

@@ -5,7 +5,7 @@ import 'package:card_game/src/cards/suited_cards/suited_card_builder.dart';
 import 'package:card_game/src/widgets/animated_flippable.dart';
 import 'package:flutter/material.dart';
 
-CardGameStyle<SuitedCard> deckStyle({double sizeMultiplier = 1}) => CardGameStyle(
+CardGameStyle<SuitedCard> deckCardStyle({double sizeMultiplier = 1}) => CardGameStyle(
       cardSize: Size(64, 89) * sizeMultiplier,
       emptyGroupBuilder: (state) => AnimatedContainer(
         duration: Duration(milliseconds: 300),

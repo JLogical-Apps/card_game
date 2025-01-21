@@ -1,6 +1,7 @@
 name: card_game
 description: "A new Flutter project."
-publish_to: 'none'
+repository: https://github.com/JLogical-Apps/card_game
+issue_tracker: https://github.com/JLogical-Apps/card_game/issues
 
 version: 1.0.0+1
 

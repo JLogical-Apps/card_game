@@ -5,13 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
+/// Base class for all card group widgets in a [CardGame].
+///
+/// Card groups manage collections of cards and handle their interactions.
+/// Type parameter [T] represents the card value type, while [G] is the group identifier type.
 abstract class CardGroup<T extends Object, G> extends HookWidget {
+  /// Unique identifier for this card group within the game.
   final G value;
+
+  /// List of card values in this group, ordered from bottom to top.
   final List<T> values;
 
+  /// Determines whether a specific card should be displayed face-down.
+  ///
+  /// If not provided, all cards are shown face-up.
   final bool Function(int index, T value)? isCardFlipped;
+
+  /// Called when a card is tapped.
   final Function(T)? onCardPressed;
+
+  /// Determines whether a stack of cards can be dropped onto this group.
+  ///
+  /// [details] contains information about the cards being moved and their source group.
   final bool Function(CardMoveDetails<T, G>)? canMoveCardHere;
+
+  /// Called when cards are successfully dropped onto this group.
+  ///
+  /// [details] contains information about the moved cards and their source group.
   final Function(CardMoveDetails<T, G>)? onCardMovedHere;
 
   int getPriority(int index, T value);
@@ -33,10 +53,21 @@ abstract class CardGroup<T extends Object, G> extends HookWidget {
   });
 }
 
+/// Abstract base class for card groups that arrange cards in a linear fashion.
+///
+/// Extends [CardGroup] to add functionality for controlling card grabbing and stack size limits.
+/// Used as the base class for [CardColumn], [CardRow], and [CardDeck].
 class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   final Offset cardOffset;
 
+  /// Determines whether a specific card can be grabbed for dragging.
+  ///
+  /// If not provided, cards cannot be grabbed.
   final bool Function(int index, T value)? canCardBeGrabbed;
+
+  /// Maximum number of cards that can be grabbed and dragged at once.
+  ///
+  /// If null, no limit is applied.
   final int? maxGrabStackSize;
 
   const CardLinearGroup({
@@ -103,6 +134,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   }
 }
 
+/// Arranges cards vertically in a column.
 class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
   CardColumn({
     super.key,
@@ -118,6 +150,7 @@ class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
   }) : super(cardOffset: Offset(0, spacing));
 }
 
+/// Arranges cards horizontally in a row.
 class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
   CardRow({
     super.key,
@@ -133,6 +166,9 @@ class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
   }) : super(cardOffset: Offset(spacing, 0));
 }
 
+/// Displays cards stacked on top of each other, showing only the topmost card.
+///
+/// Can be created as flipped using [CardDeck.flipped] to show cards face-down.
 class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
   const CardDeck({
     super.key,

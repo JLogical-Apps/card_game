@@ -38,8 +38,8 @@ class TowerOfHanoi extends HookWidget {
                           },
                           onCardMovedHere: (move) {
                             final newCards = [...cardsState.value];
-                            newCards[move.fromGroupValue].removeWhere((card) => move.cardValues.contains(card));
-                            newCards[i].addAll(move.cardValues);
+                            newCards[move.fromGroupValue].removeLast();
+                            newCards[i].add(move.cardValues.first);
                             cardsState.value = newCards;
                           },
                         ))

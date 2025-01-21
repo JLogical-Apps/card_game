@@ -59,7 +59,7 @@ class MemoryMatch extends HookWidget {
     final state = useState(MemoryMatchState.initialState);
 
     return CardGame<SuitedCard, dynamic>(
-      style: deckStyle(),
+      style: deckCardStyle(),
       children: [
         SafeArea(
           child: Column(

@@ -8,8 +8,31 @@ import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
+/// A widget that manages a card game where cards are of type [T] and groups are identified by type [G].
+///
+/// The [CardGame] widget serves as the foundation for creating card-based games. It handles card
+/// animations, drag-and-drop interactions, and state management. Type parameter [T] represents the
+/// type of values used for cards (e.g., [int] or [SuitedCard]), while [G] represents the type
+/// used to uniquely identify card groups.
+///
+/// Example usage:
+/// ```dart
+/// CardGame<SuitedCard, String>(
+///   style: deckCardStyle(),
+///   children: [
+///     CardColumn<SuitedCard, String>(
+///       value: "column1",
+///       values: [card1, card2, card3],
+///     ),
+///   ],
+/// )
+/// ```
 class CardGame<T extends Object, G> extends HookWidget {
+  /// The visual style configuration for the card game, including card appearance and dimensions.
   final CardGameStyle<T> style;
+
+  /// The widgets that make up the game layout, wrapped in a [Stack].
+  /// Should include [CardGroup] widgets like [CardColumn], [CardRow], or [CardDeck].
   final List<Widget> children;
 
   const CardGame({

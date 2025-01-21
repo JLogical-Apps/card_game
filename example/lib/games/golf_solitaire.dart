@@ -57,7 +57,7 @@ class GolfSolitaire extends HookWidget {
     final state = useState(GolfSolitaireState.initialState);
 
     return CardGame<SuitedCard, dynamic>(
-      style: deckStyle(sizeMultiplier: 1.2),
+      style: deckCardStyle(sizeMultiplier: 1.2),
       children: [
         SafeArea(
           child: Row(

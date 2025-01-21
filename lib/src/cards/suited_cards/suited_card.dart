@@ -1,14 +1,22 @@
 import 'package:equatable/equatable.dart';
 
+/// Represents a standard playing card with a suit and value.
+///
+/// Each card has a unique combination of [suit] and [value].
 class SuitedCard extends Equatable {
+  /// The suit of the card (hearts, diamonds, clubs, or spades).
   final CardSuit suit;
+
+  /// The value of the card (ace, number 2-10, jack, queen, or king).
   final SuitedCardValue value;
 
   const SuitedCard({required this.suit, required this.value});
 
+  /// Returns a complete standard deck of 52 cards (no jokers).
   static List<SuitedCard> get deck =>
       CardSuit.values.expand((suit) => values.map((value) => SuitedCard(suit: suit, value: value))).toList();
 
+  /// Returns all possible card values in order (ace through king).
   static List<SuitedCardValue> get values => [
         ...List.generate(10 - 2 + 1, (i) => 2 + i).map((value) => NumberSuitedCardValue(value: value)),
         JackSuitedCardValue(),
@@ -21,8 +29,10 @@ class SuitedCard extends Equatable {
   List<Object?> get props => [suit, value];
 }
 
+/// Represents the color of a playing card suit.
 enum CardSuitColor { black, red }
 
+/// Represents the four standard playing card suits.
 enum CardSuit {
   hearts(CardSuitColor.red),
   diamonds(CardSuitColor.red),
@@ -33,6 +43,10 @@ enum CardSuit {
   const CardSuit(this.color);
 }
 
+/// Base class for playing card values.
+///
+/// This is a sealed class with implementations for number cards (2-10),
+/// face cards (jack, queen, king), and ace.
 sealed class SuitedCardValue {}
 
 class NumberSuitedCardValue extends SuitedCardValue with EquatableMixin {
