@@ -8,8 +8,6 @@ A declarative Flutter package for building card games with beautiful animations.
 - [Getting Started](#getting-started)
 - [Core Concepts](#core-concepts)
 - [Customization](#customization)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -189,6 +187,30 @@ CardColumn<T, G>(
 )
 ```
 
+### Card Interaction and Appearance
+
+Control card interaction and visual state:
+
+```dart
+CardColumn<T, G>(
+  // ... other params
+  onCardPressed: (card) {
+    // Handle card press events
+    // Useful for flipping cards, selecting cards, or triggering game actions
+  },
+  isCardFlipped: (index, card) {
+    // Control whether specific cards are shown face-down
+    // Return true to show the card's back, false to show its face
+    return shouldCardBeFlipped(index, card);
+  },
+)
+```
+
+Common use cases:
+- Memory Match: Use `onCardPressed` to flip cards when clicked
+- Solitaire: Use `isCardFlipped` to hide cards in the tableau
+- War: Use `isCardFlipped` with `CardDeck.flipped` for face-down draw piles
+
 ### Custom Card Styles
 
 Create your own card style:
@@ -209,14 +231,7 @@ CardGameStyle<MyCard>(
 
 - Each card value (`T`) must be unique within the game
 - Each group value (`G`) must be unique within the game
+- Always explicitly specify type parameters for CardGroups to match the parent CardGame. For example, if you have `CardGame<SuitedCard, String>`, your groups should be `CardColumn<SuitedCard, String>`, `CardRow<SuitedCard, String>`, or `CardDeck<SuitedCard, String>`. This helps prevent type errors and makes the code more maintainable
 - Use [flutter_hooks](https://pub.dev/packages/flutter_hooks) or your preferred state management solution
 - Changes to card positions and flips are automatically animated
 - Card states (regular, highlighted, error) are handled automatically during drag and drop by default
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
