@@ -30,7 +30,6 @@ dependencies:
     sdk: flutter
   collection: ^1.19.0
   equatable: ^2.0.7
-  flutter_hooks: ^0.20.5
   playing_cards: ^0.4.1+11
   provider: ^6.1.2
 

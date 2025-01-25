@@ -3,10 +3,9 @@ import 'package:card_game/src/cards/card_group.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/cards/card_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
-class Card<T extends Object, G> extends HookWidget {
+class Card<T extends Object, G> extends StatefulWidget {
   final T value;
   final CardGroup<T, G>? group;
 
@@ -38,28 +37,34 @@ class Card<T extends Object, G> extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final group = this.group;
-    final draggableCardValues = this.draggableCardValues;
-    final onCardMoved = this.onCardMovedHere;
+  State<Card<T, G>> createState() => _CardState<T, G>();
+}
 
-    final dragStartOffset = useState<Offset?>(null);
+class _CardState<T extends Object, G> extends State<Card<T, G>> {
+  Offset? dragStartOffset;
+
+  @override
+  Widget build(BuildContext context) {
+    final group = widget.group;
+    final draggableCardValues = widget.draggableCardValues;
+    final onCardMoved = widget.onCardMovedHere;
+
     final cardGameState = context.watch<CardGameState<T, G>>();
 
     final disableDrags = onCardMoved == null ||
-        dragStartOffset.value != null ||
+        dragStartOffset != null ||
         group == null ||
-        currentlyDraggedCard?.fromGroupValue == group.value ||
-        !canBeDraggedOnto;
-    Widget widget = DragTarget<CardMoveDetails<T, G>>(
+        widget.currentlyDraggedCard?.fromGroupValue == group.value ||
+        !widget.canBeDraggedOnto;
+    Widget cardWidget = DragTarget<CardMoveDetails<T, G>>(
       onWillAcceptWithDetails: disableDrags
           ? null
-          : (details) => details.data.fromGroupValue != group.value && canMoveCardHere(details.data),
+          : (details) => details.data.fromGroupValue != group.value && widget.canMoveCardHere(details.data),
       onAcceptWithDetails: disableDrags ? null : (details) => onCardMoved(details.data),
       builder: (context, accepted, rejected) {
         return cardGameState.buildCardContent(
-          value,
-          flipped,
+          widget.value,
+          widget.flipped,
           disableDrags
               ? CardState.regular
               : accepted.isNotEmpty
@@ -71,7 +76,7 @@ class Card<T extends Object, G> extends HookWidget {
       },
     );
 
-    widget = GestureDetector(onTap: onPressed, child: widget);
+    cardWidget = GestureDetector(onTap: widget.onPressed, child: cardWidget);
 
     final cardMoveDetails = draggableCardValues == null || group == null
         ? null
@@ -79,28 +84,28 @@ class Card<T extends Object, G> extends HookWidget {
             cardValues: draggableCardValues,
             fromGroupValue: group.value,
           );
-    widget = Draggable<CardMoveDetails<T, G>>(
+    cardWidget = Draggable<CardMoveDetails<T, G>>(
       data: cardMoveDetails,
       feedback: SizedBox.shrink(),
-      childWhenDragging: IgnorePointer(child: widget),
+      childWhenDragging: IgnorePointer(child: cardWidget),
       onDragUpdate: cardMoveDetails == null
           ? null
           : (details) {
-              dragStartOffset.value ??= details.localPosition;
-              onDragUpdated(cardMoveDetails, details.localPosition - dragStartOffset.value!);
+              dragStartOffset ??= details.localPosition;
+              widget.onDragUpdated(cardMoveDetails, details.localPosition - dragStartOffset!);
             },
       onDraggableCanceled: (_, __) {
-        onDragEnded();
-        dragStartOffset.value = null;
+        widget.onDragEnded();
+        dragStartOffset = null;
       },
       onDragCompleted: () {
-        onDragEnded();
-        dragStartOffset.value = null;
+        widget.onDragEnded();
+        dragStartOffset = null;
       },
       maxSimultaneousDrags: cardMoveDetails == null ? 0 : 1,
-      child: widget,
+      child: cardWidget,
     );
 
-    return widget;
+    return cardWidget;
   }
 }

@@ -5,7 +5,6 @@ import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/cards/card_state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Card;
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 /// A widget that manages a card game where cards are of type [T] and groups are identified by type [G].
@@ -27,7 +26,7 @@ import 'package:provider/provider.dart';
 ///   ],
 /// )
 /// ```
-class CardGame<T extends Object, G> extends HookWidget {
+class CardGame<T extends Object, G> extends StatefulWidget {
   /// The visual style configuration for the card game, including card appearance and dimensions.
   final CardGameStyle<T> style;
 
@@ -42,16 +41,21 @@ class CardGame<T extends Object, G> extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final draggingState = useState<({CardMoveDetails<T, G> moveDetails, Offset offset})?>(null);
-    final draggingValue = draggingState.value;
+  State<CardGame<T, G>> createState() => _CardGameState<T, G>();
+}
 
-    final cardsAnimatingBackState = useState(<List<T>, DateTime>{});
+class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
+  ({CardMoveDetails<T, G> moveDetails, Offset offset})? draggingValue;
+  Map<List<T>, DateTime> cardsAnimatingBack = {};
+
+  @override
+  Widget build(BuildContext context) {
+    final draggingValue = this.draggingValue;
 
     return ChangeNotifierProvider<CardGameState<T, G>>(
       create: (_) => CardGameState(
-        cardSize: style.cardSize,
-        cardBuilder: style.cardBuilder,
+        cardSize: widget.style.cardSize,
+        cardBuilder: widget.style.cardBuilder,
         cardGroups: {},
       ),
       child: Builder(
@@ -72,17 +76,17 @@ class CardGame<T extends Object, G> extends HookWidget {
                   top: offset.dy,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOutCubic,
-                  width: style.cardSize.width,
-                  height: style.cardSize.height,
+                  width: widget.style.cardSize.width,
+                  height: widget.style.cardSize.height,
                   child: onCardMoved == null ||
                           draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
-                      ? style.buildEmptyGroup(CardState.regular)
+                      ? widget.style.buildEmptyGroup(CardState.regular)
                       : DragTarget<CardMoveDetails<T, G>>(
                           onWillAcceptWithDetails: (details) =>
                               details.data.fromGroupValue != group.value &&
                               (canMoveCardHere?.call(details.data) ?? false),
                           onAcceptWithDetails: (details) => onCardMoved(details.data),
-                          builder: (context, accepted, rejected) => style.buildEmptyGroup(
+                          builder: (context, accepted, rejected) => widget.style.buildEmptyGroup(
                             accepted.isNotEmpty
                                 ? CardState.highlighted
                                 : rejected.isNotEmpty
@@ -98,7 +102,7 @@ class CardGame<T extends Object, G> extends HookWidget {
                   .groupListsBy((record) {
                     final (group, i, value) = record;
                     final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
-                    final isAnimatingDragged = cardsAnimatingBackState.value.entries.any((entry) =>
+                    final isAnimatingDragged = cardsAnimatingBack.entries.any((entry) =>
                         entry.key.contains(value) && DateTime.now().difference(entry.value).inMilliseconds < 300);
                     return isBeingDragged || isAnimatingDragged ? double.maxFinite : group.getPriority(i, value);
                   })
@@ -115,13 +119,13 @@ class CardGame<T extends Object, G> extends HookWidget {
                         return AnimatedPositioned(
                           key: ValueKey(value),
                           top: isBeingDragged
-                              ? groupOffset.dy + group.getCardOffset(i, value).dy + draggingState.value!.offset.dy
+                              ? groupOffset.dy + group.getCardOffset(i, value).dy + draggingValue!.offset.dy
                               : groupOffset.dy + group.getCardOffset(i, value).dy,
                           left: isBeingDragged
-                              ? groupOffset.dx + group.getCardOffset(i, value).dx + draggingState.value!.offset.dx
+                              ? groupOffset.dx + group.getCardOffset(i, value).dx + draggingValue!.offset.dx
                               : groupOffset.dx + group.getCardOffset(i, value).dx,
-                          width: style.cardSize.width,
-                          height: style.cardSize.height,
+                          width: widget.style.cardSize.width,
+                          height: widget.style.cardSize.height,
                           duration: isBeingDragged ? Duration.zero : Duration(milliseconds: 300),
                           curve: Curves.easeInOutCubic,
                           child: Card<T, G>(
@@ -134,21 +138,21 @@ class CardGame<T extends Object, G> extends HookWidget {
                             onCardMovedHere: onCardMovedHere == null ? null : (move) => onCardMovedHere(move),
                             onPressed: () => group.onCardPressed?.call(value),
                             draggableCardValues: group.getDraggableCardValues(i, value),
-                            onDragUpdated: (moveDetails, offset) => draggingState.value = (
-                              moveDetails: moveDetails,
-                              offset: offset,
-                            ),
-                            onDragEnded: () {
-                              draggingState.value = null;
-                              cardsAnimatingBackState.value = {
-                                ...cardsAnimatingBackState.value,
+                            onDragUpdated: (moveDetails, offset) => setState(() => this.draggingValue = (
+                                  moveDetails: moveDetails,
+                                  offset: offset,
+                                )),
+                            onDragEnded: () => setState(() {
+                              this.draggingValue = null;
+                              cardsAnimatingBack = {
+                                ...cardsAnimatingBack,
                                 group.getDraggableCardValues(i, value)!: DateTime.now(),
                               };
-                            },
+                            }),
                           ),
                         );
                       })),
-              Stack(children: children),
+              Stack(children: widget.children),
             ],
           );
         },

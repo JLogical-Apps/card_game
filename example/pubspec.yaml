@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks:
+  flutter_hooks: ^0.20.5
   collection:
 
   card_game:

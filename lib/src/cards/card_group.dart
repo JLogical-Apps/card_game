@@ -1,15 +1,15 @@
 import 'package:card_game/src/cards/card_game.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/utils/build_context_extensions.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 /// Base class for all card group widgets in a [CardGame].
 ///
 /// Card groups manage collections of cards and handle their interactions.
 /// Type parameter [T] represents the card value type, while [G] is the group identifier type.
-abstract class CardGroup<T extends Object, G> extends HookWidget {
+abstract class CardGroup<T extends Object, G> extends StatefulWidget {
   /// Unique identifier for this card group within the game.
   final G value;
 
@@ -84,23 +84,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final cardGameState = context.watch<CardGameState<T, G>>();
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final cardGameContext =
-            context.findAncestorContextOfType<CardGame<T, G>>() ?? (throw Exception('Must be in a CardGame!'));
-        final cardGameRenderBox = cardGameContext.findRenderObject() as RenderBox;
-        final myRenderBox = context.findRenderObject() as RenderBox;
-
-        final relativeOffset = myRenderBox.localToGlobal(Offset.zero, ancestor: cardGameRenderBox);
-        cardGameState.setCardGroup(this, relativeOffset);
-      });
-      return null;
-    }, [values]);
-
-    return SizedBox(width: cardGameState.cardSize.width, height: cardGameState.cardSize.height);
-  }
+  State<StatefulWidget> createState() => _CardLinearGroupState<T, G>();
 
   @override
   Offset getCardOffset(int index, T value) {
@@ -131,6 +115,43 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   @override
   bool canBeDraggedOnto(int index, T value) {
     return index + 1 == values.length;
+  }
+}
+
+class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T, G>> {
+  @override
+  void didUpdateWidget(covariant CardLinearGroup<T, G> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!DeepCollectionEquality().equals(oldWidget.values, widget.values)) {
+      _updateCardGame();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _updateCardGame();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cardGameState = context.watch<CardGameState<T, G>>();
+    return SizedBox(width: cardGameState.cardSize.width, height: cardGameState.cardSize.height);
+  }
+
+  void _updateCardGame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cardGameState = context.read<CardGameState<T, G>>();
+      final cardGameContext =
+          context.findAncestorContextOfType<CardGame<T, G>>() ?? (throw Exception('Must be in a CardGame!'));
+      final cardGameRenderBox = cardGameContext.findRenderObject() as RenderBox;
+      final myRenderBox = context.findRenderObject() as RenderBox;
+
+      final relativeOffset = myRenderBox.localToGlobal(Offset.zero, ancestor: cardGameRenderBox);
+      cardGameState.setCardGroup(widget, relativeOffset);
+    });
   }
 }
 
