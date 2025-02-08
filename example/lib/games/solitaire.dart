@@ -253,35 +253,37 @@ class Solitaire extends HookWidget {
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: Row(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: List.generate(7, (i) {
-                    final hiddenCards = state.value.hiddenCards[i];
-                    final revealedCards = state.value.revealedCards[i];
+                Expanded(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4,
+                      children: List<Widget>.generate(7, (i) {
+                        final hiddenCards = state.value.hiddenCards[i];
+                        final revealedCards = state.value.revealedCards[i];
 
-                    return CardRow<SuitedCard, dynamic>(
-                      value: i,
-                      values: hiddenCards + revealedCards,
-                      canCardBeGrabbed: (_, card) => revealedCards.contains(card),
-                      isCardFlipped: (_, card) => hiddenCards.contains(card),
-                      onCardPressed: (card) {
-                        if (hiddenCards.contains(card)) {
-                          return;
-                        }
+                        return CardRow<SuitedCard, dynamic>(
+                          value: i,
+                          spacing: 30,
+                          values: hiddenCards + revealedCards,
+                          canCardBeGrabbed: (_, card) => revealedCards.contains(card),
+                          isCardFlipped: (_, card) => hiddenCards.contains(card),
+                          onCardPressed: (card) {
+                            if (hiddenCards.contains(card)) {
+                              return;
+                            }
 
-                        final cardIndex = revealedCards.indexOf(card);
+                            final cardIndex = revealedCards.indexOf(card);
 
-                        state.value = state.value.withAutoMove(i, revealedCards.sublist(cardIndex));
-                      },
-                      canMoveCardHere: (move) => state.value.canMove(move.cardValues, i),
-                      onCardMovedHere: (move) =>
-                          state.value = state.value.withMove(move.cardValues, move.fromGroupValue, i),
-                    );
-                  }).toList(),
+                            state.value = state.value.withAutoMove(i, revealedCards.sublist(cardIndex));
+                          },
+                          canMoveCardHere: (move) => state.value.canMove(move.cardValues, i),
+                          onCardMovedHere: (move) =>
+                              state.value = state.value.withMove(move.cardValues, move.fromGroupValue, i),
+                        );
+                      }).toList()),
                 ),
-                Spacer(),
+                SizedBox(width: 4),
                 Column(
                   children: [
                     SizedBox(height: 4),

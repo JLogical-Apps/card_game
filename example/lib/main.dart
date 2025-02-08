@@ -26,7 +26,9 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     final games = {
       'Tower Of Hanoi': TowerOfHanoi(),
-      'War': War(),
+      'War': War(
+        numPlayers: 4,
+      ),
       'Memory Match': MemoryMatch(),
       'Golf Solitaire': GolfSolitaire(),
       'Solitaire': Solitaire(),

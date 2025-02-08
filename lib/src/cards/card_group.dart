@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:card_game/src/cards/card_game.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/utils/build_context_extensions.dart';
+import 'package:card_game/src/utils/num_utils.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +38,9 @@ abstract class CardGroup<T extends Object, G> extends StatefulWidget {
   final Function(CardMoveDetails<T, G> details)? onCardMovedHere;
 
   int getPriority(int index, T value);
-  Offset getCardOffset(int index, T value);
+
+  Offset getCardOffset(int index, T value, Size cardSize, Size groupSize);
+
   List<T>? getDraggableCardValues(int index, T value) {
     return [value];
   }
@@ -87,8 +92,12 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   State<StatefulWidget> createState() => _CardLinearGroupState<T, G>();
 
   @override
-  Offset getCardOffset(int index, T value) {
-    return Offset(cardOffset.dx * index, cardOffset.dy * index);
+  Offset getCardOffset(int index, T value, Size cardSize, Size groupSize) {
+    final offset = Offset(
+      closestToZero(cardOffset.dx, (groupSize.width - cardSize.width) / max(1, values.length - 1)),
+      closestToZero(cardOffset.dy, (groupSize.height - cardSize.height) / max(1, values.length - 1)),
+    );
+    return Offset(offset.dx * index, offset.dy * index);
   }
 
   @override
@@ -138,7 +147,26 @@ class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T
   @override
   Widget build(BuildContext context) {
     final cardGameState = context.watch<CardGameState<T, G>>();
-    return SizedBox(width: cardGameState.cardSize.width, height: cardGameState.cardSize.height);
+    final cardSize = cardGameState.cardSize;
+    final cardCount = widget.values.length;
+    final cardOffset = widget.cardOffset;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: cardOffset.dx == 0
+              ? cardSize.width
+              : constraints.maxWidth.isFinite
+                  ? double.infinity
+                  : max(0, cardCount - 1) * cardOffset.dx + cardSize.width,
+          height: cardOffset.dy == 0
+              ? cardSize.height
+              : constraints.maxHeight.isFinite
+                  ? double.infinity
+                  : max(0, cardCount - 1) * cardOffset.dy + cardSize.height,
+        );
+      },
+    );
   }
 
   void _updateCardGame() {
@@ -150,7 +178,8 @@ class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T
       final myRenderBox = context.findRenderObject() as RenderBox;
 
       final relativeOffset = myRenderBox.localToGlobal(Offset.zero, ancestor: cardGameRenderBox);
-      cardGameState.setCardGroup(widget, relativeOffset);
+
+      cardGameState.setCardGroup(widget, relativeOffset, myRenderBox.size);
     });
   }
 }

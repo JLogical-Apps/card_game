@@ -66,7 +66,7 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
               ...cardGameState.cardGroups.entries
                   .where((entry) => cardGameState.cardGroups.containsKey(entry.key))
                   .map((entry) {
-                final (:group, :offset) = entry.value;
+                final (:group, :offset, :groupSize) = entry.value;
                 final canMoveCardHere = group.canMoveCardHere;
                 final onCardMoved = group.onCardMovedHere;
 
@@ -110,20 +110,24 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
                   .sortedBy((entry) => entry.key)
                   .expand((groupedEntry) => groupedEntry.value.map((record) {
                         final (group, i, value) = record;
-                        final groupOffset = cardGameState.cardGroups[group.value]!.offset;
+                        final cardGroupData = cardGameState.cardGroups[group.value]!;
+                        final groupOffset = cardGroupData.offset;
+                        final groupSize = cardGroupData.groupSize;
                         final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
 
                         final canMoveCardHere = group.canMoveCardHere;
                         final onCardMovedHere = group.onCardMovedHere;
 
+                        final cardOffset = group.getCardOffset(i, value, cardGameState.cardSize, groupSize);
+
                         return AnimatedPositioned(
                           key: ValueKey(value),
                           top: isBeingDragged
-                              ? groupOffset.dy + group.getCardOffset(i, value).dy + draggingValue!.offset.dy
-                              : groupOffset.dy + group.getCardOffset(i, value).dy,
+                              ? groupOffset.dy + cardOffset.dy + draggingValue!.offset.dy
+                              : groupOffset.dy + cardOffset.dy,
                           left: isBeingDragged
-                              ? groupOffset.dx + group.getCardOffset(i, value).dx + draggingValue!.offset.dx
-                              : groupOffset.dx + group.getCardOffset(i, value).dx,
+                              ? groupOffset.dx + cardOffset.dx + draggingValue!.offset.dx
+                              : groupOffset.dx + cardOffset.dx,
                           width: widget.style.cardSize.width,
                           height: widget.style.cardSize.height,
                           duration: isBeingDragged ? Duration.zero : Duration(milliseconds: 300),
@@ -163,7 +167,7 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
 
 class CardGameState<T extends Object, G> extends ChangeNotifier {
   final Size cardSize;
-  final Map<G, ({CardGroup<T, G> group, Offset offset})> cardGroups;
+  final Map<G, ({CardGroup<T, G> group, Offset offset, Size groupSize})> cardGroups;
   final Widget Function(T, bool flipped, CardState) cardBuilder;
 
   CardGameState({
@@ -172,13 +176,15 @@ class CardGameState<T extends Object, G> extends ChangeNotifier {
     required this.cardBuilder,
   });
 
-  void setCardGroup(CardGroup<T, G> group, Offset offset) {
+  void setCardGroup(CardGroup<T, G> group, Offset offset, Size groupSize) {
     final currentValue = cardGroups[group.value];
-    if (currentValue?.group == group.value && currentValue?.offset == offset) {
+    if (currentValue?.group == group.value &&
+        currentValue?.offset == offset &&
+        currentValue?.groupSize == groupSize) {
       return;
     }
 
-    cardGroups[group.value] = (group: group, offset: offset);
+    cardGroups[group.value] = (group: group, offset: offset, groupSize: groupSize);
     notifyListeners();
   }
 

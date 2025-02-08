@@ -24,28 +24,30 @@ class TowerOfHanoi extends HookWidget {
         SafeArea(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: cardsState.value
-                    .mapIndexed((i, states) => CardColumn<int, int>(
-                          value: i,
-                          values: states,
-                          maxGrabStackSize: 1,
-                          canMoveCardHere: (move) {
-                            final movingCard = move.cardValues.last;
-                            final movingOnto = states.lastOrNull;
-                            return movingOnto == null || movingCard < movingOnto;
-                          },
-                          onCardMovedHere: (move) {
-                            final newCards = [...cardsState.value];
-                            newCards[move.fromGroupValue].removeLast();
-                            newCards[i].add(move.cardValues.first);
-                            cardsState.value = newCards;
-                          },
-                        ))
-                    .toList(),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: cardsState.value
+                      .mapIndexed((i, states) => CardColumn<int, int>(
+                            value: i,
+                            values: states,
+                            maxGrabStackSize: 1,
+                            canMoveCardHere: (move) {
+                              final movingCard = move.cardValues.last;
+                              final movingOnto = states.lastOrNull;
+                              return movingOnto == null || movingCard < movingOnto;
+                            },
+                            onCardMovedHere: (move) {
+                              final newCards = [...cardsState.value];
+                              newCards[move.fromGroupValue].removeLast();
+                              newCards[i].add(move.cardValues.first);
+                              cardsState.value = newCards;
+                            },
+                          ))
+                      .toList(),
+                ),
               ),
-              Spacer(),
               ElevatedButton(
                 onPressed: () => cardsState.value = initialCards,
                 style: ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
