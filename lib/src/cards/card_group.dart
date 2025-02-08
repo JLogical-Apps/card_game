@@ -4,7 +4,6 @@ import 'package:card_game/src/cards/card_game.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/utils/build_context_extensions.dart';
 import 'package:card_game/src/utils/num_utils.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -132,9 +131,7 @@ class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T
   void didUpdateWidget(covariant CardLinearGroup<T, G> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (!DeepCollectionEquality().equals(oldWidget.values, widget.values)) {
-      _updateCardGame();
-    }
+    _updateCardGame();
   }
 
   @override
