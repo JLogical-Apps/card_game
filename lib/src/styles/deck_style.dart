@@ -25,6 +25,7 @@ CardGameStyle<SuitedCard> deckCardStyle({double sizeMultiplier = 1}) => CardGame
         curve: Curves.easeInOutCubic,
         isFlipped: flipped,
         front: Stack(
+          fit: StackFit.expand,
           children: [
             SuitedCardBuilder(card: value),
             Center(
