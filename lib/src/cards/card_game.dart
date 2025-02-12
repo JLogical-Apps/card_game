@@ -62,6 +62,7 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
         builder: (context) {
           final cardGameState = context.watch<CardGameState<T, G>>();
           return Stack(
+            clipBehavior: Clip.none,
             children: [
               ...cardGameState.cardGroups.entries
                   .where((entry) => cardGameState.cardGroups.containsKey(entry.key))
