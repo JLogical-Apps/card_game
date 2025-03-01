@@ -3,7 +3,7 @@ description: A declarative Flutter package for building card games with drag-and
 repository: https://github.com/JLogical-Apps/card_game
 issue_tracker: https://github.com/JLogical-Apps/card_game/issues
 
-version: 1.1.0
+version: 1.1.1
 
 screenshots:
   - path: screenshots/tower_of_hanoi.gif
