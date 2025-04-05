@@ -29,4 +29,6 @@ class CardGameStyle<T> {
   });
 
   Widget buildEmptyGroup(CardState state) => emptyGroupBuilder(state);
+
+  Widget buildCardContent(T value, bool flipped, CardState state) => cardBuilder(value, flipped, state);
 }

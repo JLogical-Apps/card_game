@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:card_game/src/cards/card_game.dart';
+import 'package:card_game/src/cards/card_game_style.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/utils/build_context_extensions.dart';
 import 'package:card_game/src/utils/num_utils.dart';
@@ -84,7 +85,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
     super.isCardFlipped,
     required this.cardOffset,
     this.canCardBeGrabbed,
-    required this.maxGrabStackSize,
+    this.maxGrabStackSize,
   });
 
   @override
@@ -143,8 +144,8 @@ class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T
 
   @override
   Widget build(BuildContext context) {
-    final cardGameState = context.watch<CardGameState<T, G>>();
-    final cardSize = cardGameState.cardSize;
+    final cardStyle = context.watch<CardGameStyle<T>>();
+    final cardSize = cardStyle.cardSize;
     final cardCount = widget.values.length;
     final cardOffset = widget.cardOffset;
 

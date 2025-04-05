@@ -1,4 +1,4 @@
-import 'package:card_game/src/cards/card_game.dart';
+import 'package:card_game/src/cards/card_game_style.dart';
 import 'package:card_game/src/cards/card_group.dart';
 import 'package:card_game/src/cards/card_move_details.dart';
 import 'package:card_game/src/cards/card_state.dart';
@@ -49,7 +49,7 @@ class _CardState<T extends Object, G> extends State<Card<T, G>> {
     final draggableCardValues = widget.draggableCardValues;
     final onCardMoved = widget.onCardMovedHere;
 
-    final cardGameState = context.watch<CardGameState<T, G>>();
+    final cardStyle = context.watch<CardGameStyle<T>>();
 
     final disableDrags = onCardMoved == null ||
         dragStartOffset != null ||
@@ -62,7 +62,7 @@ class _CardState<T extends Object, G> extends State<Card<T, G>> {
           : (details) => details.data.fromGroupValue != group.value && widget.canMoveCardHere(details.data),
       onAcceptWithDetails: disableDrags ? null : (details) => onCardMoved(details.data),
       builder: (context, accepted, rejected) {
-        return cardGameState.buildCardContent(
+        return cardStyle.buildCardContent(
           widget.value,
           widget.flipped,
           disableDrags
