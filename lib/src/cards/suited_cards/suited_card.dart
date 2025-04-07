@@ -27,6 +27,9 @@ class SuitedCard extends Equatable {
 
   @override
   List<Object?> get props => [suit, value];
+
+  @override
+  String toString() => '$suit$value';
 }
 
 /// Represents the color of a playing card suit.
@@ -41,6 +44,14 @@ enum CardSuit {
 
   final CardSuitColor color;
   const CardSuit(this.color);
+
+  @override
+  String toString() => switch (this) {
+        CardSuit.hearts => '♥',
+        CardSuit.diamonds => '♦',
+        CardSuit.clubs => '♣',
+        CardSuit.spades => '♠',
+      };
 }
 
 /// Base class for playing card values.
@@ -56,24 +67,39 @@ class NumberSuitedCardValue extends SuitedCardValue with EquatableMixin {
 
   @override
   List<Object?> get props => [value];
+
+  @override
+  String toString() => value.toString();
 }
 
 class JackSuitedCardValue extends SuitedCardValue with EquatableMixin {
   @override
   List<Object?> get props => [];
+
+  @override
+  String toString() => 'J';
 }
 
 class QueenSuitedCardValue extends SuitedCardValue with EquatableMixin {
   @override
   List<Object?> get props => [];
+
+  @override
+  String toString() => 'Q';
 }
 
 class KingSuitedCardValue extends SuitedCardValue with EquatableMixin {
   @override
   List<Object?> get props => [];
+
+  @override
+  String toString() => 'K';
 }
 
 class AceSuitedCardValue extends SuitedCardValue with EquatableMixin {
   @override
   List<Object?> get props => [];
+
+  @override
+  String toString() => 'A';
 }
