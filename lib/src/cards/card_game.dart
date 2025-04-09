@@ -157,6 +157,10 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
                           final groupSize = cardGroupData.groupSize;
                           final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
 
+                          final animatingThroughGroupValue = cardsAnimatingThroughGroups[value];
+                          final isAnimatingThroughGroups = animatingThroughGroupValue != null &&
+                              DateTime.now().difference(animatingThroughGroupValue).inMilliseconds < 300;
+
                           final canMoveCardHere = group.canMoveCardHere;
                           final onCardMovedHere = group.onCardMovedHere;
 
@@ -182,7 +186,7 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
                               currentlyDraggedCard: draggingValue?.moveDetails,
                               canMoveCardHere: (move) => canMoveCardHere?.call(move) ?? onCardMovedHere != null,
                               onCardMovedHere: onCardMovedHere == null ? null : (move) => onCardMovedHere(move),
-                              onPressed: () => group.onCardPressed?.call(value),
+                              onPressed: isAnimatingThroughGroups ? null : () => group.onCardPressed?.call(value),
                               draggableCardValues: group.getDraggableCardValues(i, value),
                               onDragUpdated: (moveDetails, offset) => setState(() => this.draggingValue = (
                                     moveDetails: moveDetails,
