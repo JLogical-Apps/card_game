@@ -30,8 +30,8 @@ dependencies:
     sdk: flutter
   collection: ^1.19.0
   equatable: ^2.0.7
-  playing_cards: ^0.4.1+11
   provider: ^6.1.2
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +40,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
