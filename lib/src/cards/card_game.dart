@@ -34,10 +34,16 @@ class CardGame<T extends Object, G> extends StatefulWidget {
   /// Should include [CardGroup] widgets like [CardColumn], [CardRow], or [CardDeck].
   final List<Widget> children;
 
+  /// Unique identifier for a game.
+  /// Use this whenever a new game is started or restarted so that card layering
+  /// is predictable during the reshuffle.
+  final Object? gameKey;
+
   const CardGame({
     super.key,
     required this.style,
     required this.children,
+    this.gameKey,
   });
 
   @override
@@ -45,8 +51,26 @@ class CardGame<T extends Object, G> extends StatefulWidget {
 }
 
 class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
+  late Object? gameKey = widget.gameKey;
+  DateTime lastGameStarted = DateTime.now();
+
   ({CardMoveDetails<T, G> moveDetails, Offset offset})? draggingValue;
   Map<List<T>, DateTime> cardsAnimatingBack = {};
+
+  Map<T, G> cardByGroup = {};
+  Map<T, DateTime> cardsAnimatingThroughGroups = {};
+
+  @override
+  void didUpdateWidget(covariant CardGame<T, G> oldWidget) {
+    if (gameKey != widget.gameKey) {
+      gameKey = widget.gameKey;
+      cardByGroup.clear();
+      cardsAnimatingThroughGroups.clear();
+      lastGameStarted = DateTime.now();
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +124,29 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
                     .expand((entry) => entry.value.group.values.mapIndexed((i, value) => (entry.value.group, i, value)))
                     .groupListsBy((record) {
                       final (group, i, value) = record;
+
+                      // Handle cards updating groups.
+                      if (cardByGroup[value] != null && cardByGroup[value] != group.value) {
+                        cardsAnimatingThroughGroups[value] = DateTime.now();
+                        cardByGroup[value] = group.value;
+                      } else if (cardByGroup[value] == null) {
+                        cardByGroup[value] = group.value;
+                      }
+
+                      final isReshuffling = DateTime.now().difference(lastGameStarted).inMilliseconds < 300;
+
+                      final animatingThroughGroupValue = cardsAnimatingThroughGroups[value];
+                      final isAnimatingThroughGroups = animatingThroughGroupValue != null &&
+                          DateTime.now().difference(animatingThroughGroupValue).inMilliseconds < 300;
+
                       final isBeingDragged = draggingValue?.moveDetails.cardValues.contains(value) ?? false;
                       final isAnimatingDragged = cardsAnimatingBack.entries.any((entry) =>
                           entry.key.contains(value) && DateTime.now().difference(entry.value).inMilliseconds < 300);
-                      return isBeingDragged || isAnimatingDragged ? double.maxFinite : group.getPriority(i, value);
+                      final priorityInGroup = group.getPriority(i, value);
+
+                      return isBeingDragged || isAnimatingDragged
+                          ? double.maxFinite
+                          : (priorityInGroup + (isAnimatingThroughGroups && !isReshuffling ? 1000 : 0));
                     })
                     .entries
                     .sortedBy((entry) => entry.key)

@@ -75,6 +75,10 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
   /// If null, no limit is applied.
   final int? maxGrabStackSize;
 
+  /// The base priority of cards in this deck.
+  /// Higher priority cards are rendered on top of lower priority cards.
+  final int basePriority;
+
   const CardLinearGroup({
     super.key,
     required super.value,
@@ -86,6 +90,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
     required this.cardOffset,
     this.canCardBeGrabbed,
     this.maxGrabStackSize,
+    this.basePriority = 0,
   });
 
   @override
@@ -102,7 +107,7 @@ class CardLinearGroup<T extends Object, G> extends CardGroup<T, G> {
 
   @override
   int getPriority(int index, T value) {
-    return index;
+    return basePriority + index;
   }
 
   @override
@@ -194,6 +199,7 @@ class CardColumn<T extends Object, G> extends CardLinearGroup<T, G> {
     super.isCardFlipped,
     super.canCardBeGrabbed,
     super.maxGrabStackSize,
+    super.basePriority = 0,
     double spacing = 20,
   }) : super(cardOffset: Offset(0, spacing));
 }
@@ -210,6 +216,7 @@ class CardRow<T extends Object, G> extends CardLinearGroup<T, G> {
     super.isCardFlipped,
     super.canCardBeGrabbed,
     super.maxGrabStackSize,
+    super.basePriority = 0,
     double spacing = 20,
   }) : super(cardOffset: Offset(spacing, 0));
 }
@@ -226,6 +233,7 @@ class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
     super.canMoveCardHere,
     super.onCardMovedHere,
     super.isCardFlipped,
+    super.basePriority = 0,
     bool canGrab = false,
   }) : super(cardOffset: Offset.zero, maxGrabStackSize: canGrab ? 1 : 0);
 
@@ -236,6 +244,7 @@ class CardDeck<T extends Object, G> extends CardLinearGroup<T, G> {
     super.onCardPressed,
     super.canMoveCardHere,
     super.onCardMovedHere,
+    super.basePriority = 0,
     bool canGrab = false,
   }) : super(
           cardOffset: Offset.zero,
