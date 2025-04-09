@@ -8,3 +8,4 @@ export 'src/cards/suited_cards/suited_card_distance_mapper.dart';
 export 'src/cards/suited_cards/suited_card_value_mapper.dart';
 export 'src/styles/deck_style.dart';
 export 'src/styles/numeric_card_style.dart';
+export 'src/widgets/animated_flippable.dart';
