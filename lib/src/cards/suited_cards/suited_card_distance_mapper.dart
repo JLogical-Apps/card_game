@@ -21,6 +21,14 @@ class SuitedCardDistanceMapper {
         distanceMapper: (card1, card2) => (_getValue(card1, card2) - _getValue(card2, card1)).abs(),
       );
 
+  /// Returns a mapper where ace is at the bottom and king is at the top.
+  /// There is no rollover from king to ace.
+  static SuitedCardDistanceMapper get aceToKing => SuitedCardDistanceMapper._(
+        distanceMapper: (card1, card2) =>
+            (SuitedCardValueMapper.aceAsLowest.getValue(card1) - SuitedCardValueMapper.aceAsLowest.getValue(card2))
+                .abs(),
+      );
+
   static int _getValue(SuitedCard card1, SuitedCard card2) => switch (card1.value) {
         AceSuitedCardValue() => switch (card2.value) {
             KingSuitedCardValue() => 14,
