@@ -28,7 +28,7 @@ import 'package:provider/provider.dart';
 /// ```
 class CardGame<T extends Object, G> extends StatefulWidget {
   /// The visual style configuration for the card game, including card appearance and dimensions.
-  final CardGameStyle<T> style;
+  final CardGameStyle<T, G> style;
 
   /// The widgets that make up the game layout, wrapped in a [Stack].
   /// Should include [CardGroup] widgets like [CardColumn], [CardRow], or [CardDeck].
@@ -76,7 +76,7 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
   Widget build(BuildContext context) {
     final draggingValue = this.draggingValue;
 
-    return Provider<CardGameStyle<T>>.value(
+    return Provider<CardGameStyle<T, G>>.value(
       value: widget.style,
       child: ChangeNotifierProvider<CardGameState<T, G>>(
         create: (_) => CardGameState(cardGroups: {}),
@@ -103,13 +103,14 @@ class _CardGameState<T extends Object, G> extends State<CardGame<T, G>> {
                     height: widget.style.cardSize.height,
                     child: onCardMoved == null ||
                             draggingValue != null && draggingValue.moveDetails.fromGroupValue == group.value
-                        ? widget.style.buildEmptyGroup(CardState.regular)
+                        ? widget.style.buildEmptyGroup(group.value, CardState.regular)
                         : DragTarget<CardMoveDetails<T, G>>(
                             onWillAcceptWithDetails: (details) =>
                                 details.data.fromGroupValue != group.value &&
                                 (canMoveCardHere?.call(details.data) ?? false),
                             onAcceptWithDetails: (details) => onCardMoved(details.data),
                             builder: (context, accepted, rejected) => widget.style.buildEmptyGroup(
+                              group.value,
                               accepted.isNotEmpty
                                   ? CardState.highlighted
                                   : rejected.isNotEmpty

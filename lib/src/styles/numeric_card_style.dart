@@ -2,9 +2,9 @@ import 'package:card_game/src/cards/card_game_style.dart';
 import 'package:card_game/src/cards/card_state.dart';
 import 'package:flutter/material.dart';
 
-CardGameStyle<int> numericCardStyle({double sizeMultiplier = 1}) => CardGameStyle(
+CardGameStyle<int, G> numericCardStyle<G>({double sizeMultiplier = 1}) => CardGameStyle(
       cardSize: Size(80, 120) * sizeMultiplier,
-      emptyGroupBuilder: (state) => AnimatedContainer(
+      emptyGroupBuilder: (group, state) => AnimatedContainer(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOutCubic,
         decoration: BoxDecoration(
@@ -17,7 +17,7 @@ CardGameStyle<int> numericCardStyle({double sizeMultiplier = 1}) => CardGameStyl
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      cardBuilder: (value, flipped, state) => AnimatedContainer(
+      cardBuilder: (value, group, flipped, state) => AnimatedContainer(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOutCubic,
         decoration: BoxDecoration(

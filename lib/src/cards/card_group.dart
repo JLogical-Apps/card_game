@@ -149,7 +149,7 @@ class _CardLinearGroupState<T extends Object, G> extends State<CardLinearGroup<T
 
   @override
   Widget build(BuildContext context) {
-    final cardStyle = context.watch<CardGameStyle<T>>();
+    final cardStyle = context.watch<CardGameStyle<T, G>>();
     final cardSize = cardStyle.cardSize;
     final cardCount = widget.values.length;
     final cardOffset = widget.cardOffset;

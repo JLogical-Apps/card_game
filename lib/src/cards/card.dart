@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class Card<T extends Object, G> extends StatefulWidget {
   final T value;
-  final CardGroup<T, G>? group;
+  final CardGroup<T, G> group;
 
   final bool flipped;
 
@@ -24,7 +24,7 @@ class Card<T extends Object, G> extends StatefulWidget {
   const Card({
     super.key,
     required this.value,
-    this.group,
+    required this.group,
     required this.flipped,
     this.canBeDraggedOnto = false,
     this.currentlyDraggedCard,
@@ -49,11 +49,10 @@ class _CardState<T extends Object, G> extends State<Card<T, G>> {
     final draggableCardValues = widget.draggableCardValues;
     final onCardMoved = widget.onCardMovedHere;
 
-    final cardStyle = context.watch<CardGameStyle<T>>();
+    final cardStyle = context.watch<CardGameStyle<T, G>>();
 
     final disableDrags = onCardMoved == null ||
         dragStartOffset != null ||
-        group == null ||
         widget.currentlyDraggedCard?.fromGroupValue == group.value ||
         !widget.canBeDraggedOnto;
     Widget cardWidget = DragTarget<CardMoveDetails<T, G>>(
@@ -64,6 +63,7 @@ class _CardState<T extends Object, G> extends State<Card<T, G>> {
       builder: (context, accepted, rejected) {
         return cardStyle.buildCardContent(
           widget.value,
+          group.value,
           widget.flipped,
           disableDrags
               ? CardState.regular
@@ -78,12 +78,9 @@ class _CardState<T extends Object, G> extends State<Card<T, G>> {
 
     cardWidget = GestureDetector(onTap: widget.onPressed, child: cardWidget);
 
-    final cardMoveDetails = draggableCardValues == null || group == null
+    final cardMoveDetails = draggableCardValues == null
         ? null
-        : CardMoveDetails<T, G>(
-            cardValues: draggableCardValues,
-            fromGroupValue: group.value,
-          );
+        : CardMoveDetails<T, G>(cardValues: draggableCardValues, fromGroupValue: group.value);
     cardWidget = Draggable<CardMoveDetails<T, G>>(
       data: cardMoveDetails,
       feedback: SizedBox.shrink(),
