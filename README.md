@@ -33,6 +33,27 @@ Each example demonstrates different features of the card_game package. Check out
 | [Golf Solitaire](https://github.com/JLogical-Apps/card_game/tree/master/example/lib/games/golf_solitaire.dart) | ![Golf Solitaire](https://raw.githubusercontent.com/JLogical-Apps/card_game/master/screenshots/golf_solitaire.gif) | Remove cards that are one rank away from the top card of the waste pile. Kings and Aces are considered one apart.                                     | • Complex card comparison with `SuitedCardDistanceMapper`                                                                                                                    |
 | [Solitaire](https://github.com/JLogical-Apps/card_game/tree/master/example/lib/games/solitaire.dart)           | ![Solitaire](https://raw.githubusercontent.com/JLogical-Apps/card_game/master/screenshots/solitaire.gif)           | The classic solitaire game. Build foundation piles by suit from Ace to King, and move cards between columns following standard rules.                 | • Advanced card movement rules<br>• Multiple card dragging<br>• Complex state management<br>• Card stacking with flipped and unflipped cards                                 |
 
+## Showcased in Production
+
+### Cards by JLogical
+<a href="https://cards.jlogical.com"><img src="https://raw.githubusercontent.com/JLogical-Apps/cards/refs/heads/master/assets/app_icon.png" alt="Cards by JLogical" width="64" /></a>
+
+[Cards](https://cards.jlogical.com) is a full-featured card game collection built with the `card_game` package that demonstrates its capabilities in a production environment.
+
+**Features:**
+- 🎮 Multiple game variants: Golf Solitaire, Classic Solitaire, FreeCell
+- ⚡ Auto-moves and smart hints
+- 🎵 Sound effects
+- 🎨 Customizable themes and card backs
+- 🏆 Achievements and statistics
+- ⏱️ Timer
+- 📱 Fully responsive design
+- 💾 Game saving and loading
+
+The Cards project showcases advanced implementations including sophisticated game logic, multi-game support, persistent storage, and polished UI/UX. Check out the [source code](https://github.com/JLogical-Apps/cards) for inspiration on building your own complex card games.
+
+[🌐 Play Now](https://cards.jlogical.com) • [📦 View Source Code](https://github.com/JLogical-Apps/cards)
+
 ## Implementing Your First Game
 
 Let's walk through implementing the Tower of Hanoi example, as it's the simplest game that demonstrates the core concepts:
